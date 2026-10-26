@@ -419,7 +419,9 @@ def report(res: dict, name: str, out: Path, cmd_python: str) -> dict:
     A("   (ties in J within 1e-3 are ranked by ensemble spread, then IL)")
     A("-" * 100)
     p_str = " ".join(f"{v:.6f}" for v in p[:6]) + f" {prob.eps_r} {prob.h}"
-    cmd = f"{cmd_python} build_case.py --p {p_str} --name inv_{name}"
+    prod = FAMILY_DIR / "prod_build_args.txt"
+    prod_args = (" " + prod.read_text().strip()) if prod.exists() else ""
+    cmd = f"cd families/{FAMILY_DIR.name} && {cmd_python} build_case.py --p {p_str} --name inv_{name}{prod_args}"
     A("Palace verification (not run here):")
     A("  " + cmd)
     A(f"  then: python collect.py (routes the run) and compare runs/inv_{name} against {out / 'sparams_pred.npz'}")
@@ -584,7 +586,7 @@ def main(argv=None):
           f"f grid {sur.f.min():.2f}-{sur.f.max():.2f} GHz, {len(sur.f)} points")
     res = solve(spec, sur, n_starts=args.n_starts, k=args.k, seed=args.seed, sampler=args.sampler,
                 maxiter=args.maxiter, polish=not args.no_polish)
-    py = ".venv/Scripts/python" if sys.platform.startswith("win") else ".venv/bin/python"
+    py = "python"
     report(res, name, out, py)
 
 
