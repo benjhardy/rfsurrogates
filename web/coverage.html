@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #F1F4F7; --surface: #FFFFFF; --ink: #142230; --muted: #586678; --line: #D5DCE5; --grid: #E4E9EF;
+  --field: #D9472B; --hfield: #2B6CB0; --ok: #2A7F50; --bad: #C0392B; --warn: #B85A0B; --accent: #2160A8;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D131A; --surface: #141C26; --ink: #E3E9EF; --muted: #98A4B2; --line: #2A3644; --grid: #1F2B39;
+    --field: #FF8A5C; --hfield: #6FB0F0; --ok: #6BCB93; --bad: #FF8A80; --warn: #F0A050; --accent: #6FA8EA;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D131A; --surface: #141C26; --ink: #E3E9EF; --muted: #98A4B2; --line: #2A3644; --grid: #1F2B39;
+  --field: #FF8A5C; --hfield: #6FB0F0; --ok: #6BCB93; --bad: #FF8A80; --warn: #F0A050; --accent: #6FA8EA;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); margin: 0; overflow-x: hidden; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.08; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.6vw, 3rem); font-weight: 800; letter-spacing: -0.02em; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+button { font-family: var(--body); }
+[hidden] { display: none !important; }
+.eyebrow { font: 600 0.72rem/1.2 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.05rem; color: var(--muted); max-width: 72ch; }
+.note { font-size: 0.86rem; color: var(--muted); }
+.topbar { max-width: 1240px; margin: 0 auto; padding: 14px 20px 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.topbar a.home { font: 600 0.78rem/1 var(--mono); letter-spacing: 0.06em; color: var(--muted); text-decoration: none; padding: 8px 0; }
+.topbar a.home:hover { color: var(--ink); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 12px 20px 56px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+.hero { display: grid; gap: 8px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.pad { padding: 16px 18px; display: grid; gap: 12px; align-content: start; }
+.vbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.vbar h3 { margin-right: auto; }
+.btn { font: 600 0.84rem/1 var(--body); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { font: 600 0.8rem/1 var(--body); padding: 9px 11px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.lbl { font: 600 0.68rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.filters { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.filters > div { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* status summary bar */
+.sumbar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--bg); border: 1px solid var(--line); }
+.sumbar span { display: block; height: 100%; }
+.sumkey { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 500 0.8rem/1.3 var(--mono); color: var(--muted); }
+.sumkey b { color: var(--ink); font-weight: 600; }
+
+/* markers (shared by legend, chips, table) */
+.mk { display: inline-block; width: 11px; height: 11px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; border: 2px solid transparent; flex: none; }
+.mk.sq { border-radius: 3px; }
+.s-surrogate, .b-learned { background: var(--ok); border-color: var(--ok); }
+.s-planned { background: var(--accent); border-color: var(--accent); }
+.s-experiment, .b-experiment { background: var(--warn); border-color: var(--warn); }
+.s-open { background: transparent; border-color: var(--muted); }
+.b-textbook { background: transparent; border-color: var(--accent); }
+.b-none { background: transparent; border: 2px dashed var(--muted); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.side { position: sticky; top: 12px; display: grid; gap: 18px; min-width: 0; }
+@media (max-width: 900px) { .side { position: static; } }
+
+.mapwrap { padding: 10px 12px 14px; }
+.colhead { display: flex; justify-content: space-between; font: 600 0.68rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0 2px 6px; }
+#map { display: block; width: 100%; overflow: visible; }
+#map .edge { fill: none; stroke: var(--line); stroke-width: 1.2; transition: stroke 120ms, opacity 120ms; }
+#map .edge.on { stroke-width: 2.2; }
+#map .node { cursor: pointer; outline: none; }
+#map .node text { font: 500 12.5px var(--body); fill: var(--ink); }
+#map .node .hit { fill: transparent; }
+#map .node:hover .hit, #map .node:focus-visible .hit { fill: var(--bg); }
+#map .node:focus-visible .hit { stroke: var(--ink); stroke-width: 1.5; }
+#map .node.sel .hit { fill: var(--bg); stroke: var(--ink); stroke-width: 1.5; }
+#map .ghead { font: 600 10.5px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; fill: var(--muted); }
+#map .dim { opacity: 0.22; }
+#map .count { font: 500 10.5px var(--mono); fill: var(--muted); }
+@media (max-width: 600px) { #map .node text { font-size: 11.5px; } }
+
+.det { display: grid; gap: 10px; }
+.det h2 { font-size: 1.35rem; font-weight: 800; }
+.badge { display: inline-flex; align-items: center; font: 600 0.74rem/1 var(--mono); padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; font: 500 0.82rem/1.2 var(--body); padding: 6px 9px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; text-align: left; }
+.chip:hover { border-color: var(--muted); }
+.chip small { color: var(--muted); margin-left: 6px; font: 500 0.72rem/1.2 var(--mono); }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; font-size: 0.9rem; }
+.kv dt { font: 600 0.68rem/1.6 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+.keygrid { display: grid; gap: 6px; font-size: 0.86rem; }
+.keygrid div { display: flex; align-items: baseline; gap: 2px; }
+.keygrid b { font-weight: 600; margin-right: 6px; }
+.keygrid span { color: var(--muted); }
+
+table.cov { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+table.cov th, table.cov td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.cov thead th { font: 600 0.66rem/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+table.cov tr.grp td { font: 600 0.7rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+table.cov tbody tr.row { cursor: pointer; }
+table.cov tbody tr.row:hover td { background: var(--bg); }
+table.cov tr.dim td { opacity: 0.35; }
+.tblwrap { overflow-x: auto; max-width: 100%; }
+.err { color: var(--bad); }
+footer.foot { border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.84rem; color: var(--muted); }
+footer.foot a { color: var(--muted); }
+@media (max-width: 600px) {
+  .topbar { padding-inline: 16px; }
+  .wrap { padding-inline: 16px; gap: 18px; }
+  .pad { padding: 14px; }
+  .mapwrap { padding: 8px 6px 12px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<title>Surrogate Coverage Map</title>
+<meta name="description" content="Which passive microwave device types have a surrogate model in rfsurrogates, which are planned, and which building blocks they share.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div class="topbar"><a class="home" href="https://github.com/benjhardy/rfsurrogates">&larr; rfsurrogates</a><button class="btn" id="themeBtn" type="button">Dark</button></div>
+<main class="wrap">
+  <header class="hero">
+    <p class="eyebrow">rfsurrogates &middot; coverage</p>
+    <h1>Coverage Map</h1>
+    <p class="lede" id="lede">Passive microwave device types, the building blocks they are made of, and which ones have a surrogate model.</p>
+  </header>
+
+  <section class="card pad" aria-label="Summary">
+    <div class="sumbar" id="sumbar" role="img"></div>
+    <div class="sumkey" id="sumkey"></div>
+    <div class="filters">
+      <div><span class="lbl">Status</span><div class="seg" id="statusSeg" role="group" aria-label="Filter by status"></div></div>
+      <div><span class="lbl">Route</span><div class="seg" id="routeSeg" role="group" aria-label="Filter by modelling route"></div></div>
+      <div><span class="lbl">View</span><div class="seg" id="viewSeg" role="group" aria-label="View"></div></div>
+    </div>
+  </section>
+
+  <section class="layout">
+    <div class="card" id="mapCard">
+      <div class="vbar"><h3>Devices and their building blocks</h3><span class="note" id="mapHint">Point at a device or a block; click to pin it.</span></div>
+      <div class="mapwrap" id="mapView">
+        <div class="colhead"><span>Device types</span><span>Building blocks</span></div>
+        <svg id="map" role="group" aria-label="Device types on the left, building blocks on the right; lines connect each device to the blocks it is made of"></svg>
+      </div>
+      <div class="tblwrap" id="tableView" hidden>
+        <table class="cov"><thead><tr><th>Device</th><th>Status</th><th>Routes</th><th>Blocks</th></tr></thead><tbody id="covBody"></tbody></table>
+      </div>
+      <p class="note err pad" id="loadErr" hidden></p>
+    </div>
+
+    <div class="side">
+      <div class="card pad det" id="detail" aria-live="polite"></div>
+      <div class="card pad">
+        <h3>Key</h3>
+        <div class="keygrid" id="keyDev"></div>
+        <div class="keygrid" id="keyBlk"></div>
+        <div class="keygrid" id="keyRoute"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Generated from <code>coverage.json</code> by <code>tools/make_coverage.py</code>.</span>
+    <a href="https://github.com/benjhardy/rfsurrogates/blob/main/docs/COVERAGE.md">COVERAGE.md</a>
+    <a href="https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md">Contributing</a>
+    <a href="index.html">Filter surrogate page</a>
+  </footer>
+</main>
+
+<script>
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const SVGNS = 'http://www.w3.org/2000/svg';
+const REPO = 'https://github.com/benjhardy/rfsurrogates';
+
+// ---------- theme (same as the filter surrogate page) ----------
+const Theme = (() => {
+  const KEY = 'vc-theme', subs = [];
+  const eff = () => { const t = document.documentElement.dataset.theme; if (t === 'light' || t === 'dark') return t; return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; };
+  function label() { const b = $('#themeBtn'); const d = eff() === 'dark'; b.textContent = d ? 'Light' : 'Dark'; b.setAttribute('aria-label', 'Switch to ' + (d ? 'light' : 'dark') + ' theme'); }
+  function init() {
+    let saved = null; try { saved = localStorage.getItem(KEY); } catch (e) {}
+    if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+    label();
+    $('#themeBtn').addEventListener('click', () => { const t = eff() === 'dark' ? 'light' : 'dark'; try { localStorage.setItem(KEY, t); } catch (e) {} document.documentElement.dataset.theme = t; label(); subs.forEach(f => f()); });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { label(); subs.forEach(f => f()); });
+  }
+  return { init, on: f => subs.push(f) };
+})();
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const STATUS_VAR = { surrogate: '--ok', planned: '--accent', experiment: '--warn', open: '--muted' };
+const BLOCK_VAR = { learned: '--ok', experiment: '--warn', textbook: '--accent', none: '--muted' };
+
+// ---------- state ----------
+let COV = null, DEV = {}, BLK = {};
+const S = { status: 'all', route: 'all', view: 'map', hover: null, pin: null };
+
+function segment(host, items, key, onChange) {
+  host.innerHTML = '';
+  for (const [v, text] of items) {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = text;
+    b.setAttribute('aria-pressed', String(S[key] === v));
+    b.addEventListener('click', () => { S[key] = v; host.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); onChange(); });
+    host.appendChild(b);
+  }
+}
+const passes = d => (S.status === 'all' || d.status === S.status) && (S.route === 'all' || (d.routes || []).includes(S.route));
+
+// ---------- summary, key ----------
+function renderSummary() {
+  const devs = COV.devices, n = {};
+  for (const s in COV.device_status) n[s] = devs.filter(d => d.status === s).length;
+  $('#sumbar').innerHTML = Object.keys(COV.device_status).map(s => n[s] ? `<span style="width:${100 * n[s] / devs.length}%;background:var(${STATUS_VAR[s]});opacity:${s === 'open' ? 0.35 : 1}"></span>` : '').join('');
+  $('#sumbar').setAttribute('aria-label', Object.keys(n).map(s => `${n[s]} ${s}`).join(', ') + ` of ${devs.length} device types`);
+  $('#sumkey').innerHTML = Object.keys(COV.device_status).map(s => `<span><i class="mk s-${s}"></i><b>${n[s]}</b> ${s}</span>`).join('') + `<span>${COV.blocks.length} building blocks</span>`;
+  $('#lede').textContent = `${devs.length} passive microwave device types, the ${COV.blocks.length} building blocks they are made of, and which ones have a surrogate model. ${n.surrogate} has a published surrogate, ${n.planned} is planned, ${n.experiment} is an experiment, and ${n.open} are open for proposals.`;
+  $('#keyDev').innerHTML = '<span class="lbl">Device status</span>' + Object.entries(COV.device_status).map(([s, t]) => `<div><i class="mk s-${s}"></i><b>${s}</b><span>${esc(t)}</span></div>`).join('');
+  $('#keyBlk').innerHTML = '<span class="lbl">Block status</span>' + Object.entries(COV.block_status).map(([s, t]) => `<div><i class="mk sq b-${s}"></i><b>${s}</b><span>${esc(t)}</span></div>`).join('');
+  $('#keyRoute').innerHTML = '<span class="lbl">Routes</span>' + Object.entries(COV.routes).map(([s, t]) => `<div><b>${s}</b><span>${esc(t)}</span></div>`).join('');
+}
+
+// ---------- map ----------
+const RH = 27, HEAD = 30;
+let NODES = {}, EDGES = [];
+function layout() {
+  const rowsL = [], rowsR = [];
+  let y = 8;
+  for (const g of COV.groups) {
+    const ds = COV.devices.filter(d => d.group === g.id);
+    if (!ds.length) continue;
+    rowsL.push({ head: g.label, y: y + 14 }); y += HEAD;
+    for (const d of ds) { rowsL.push({ dev: d, y: y + RH / 2 }); y += RH; }
+    y += 6;
+  }
+  const H = y;
+  const devY = {}; rowsL.forEach(r => { if (r.dev) devY[r.dev.id] = r.y; });
+  // blocks: grouped by kind, ordered inside a kind by the mean height of the devices that use them
+  const bary = b => { const ys = b.used_by.map(id => devY[id]); return ys.length ? ys.reduce((a, c) => a + c, 0) / ys.length : H; };
+  const kinds = COV.block_kinds.map(k => ({ k, bs: COV.blocks.filter(b => b.kind === k.id).sort((a, c) => bary(a) - bary(c)) })).filter(x => x.bs.length);
+  kinds.sort((a, c) => a.bs.reduce((s, b) => s + bary(b), 0) / a.bs.length - c.bs.reduce((s, b) => s + bary(b), 0) / c.bs.length);
+  const nB = kinds.reduce((s, x) => s + x.bs.length, 0), nK = kinds.length;
+  const step = Math.max(RH, (H - 16 - nK * HEAD) / nB);
+  y = 8;
+  for (const x of kinds) {
+    rowsR.push({ head: x.k.label, y: y + 14 }); y += HEAD;
+    for (const b of x.bs) { rowsR.push({ blk: b, y: y + step / 2 }); y += step; }
+  }
+  return { rowsL, rowsR, H: Math.max(H, y + 8) };
+}
+
+function fitText(t, max) {
+  const full = t.textContent;
+  if (t.getComputedTextLength() <= max) return;
+  let s = full;
+  while (s.length > 3 && t.getComputedTextLength() > max) { s = s.slice(0, -1); t.textContent = s + '…'; }
+  const ti = document.createElementNS(SVGNS, 'title'); ti.textContent = full; t.appendChild(ti);
+}
+
+function marker(kind, status, x, y) {
+  const shape = document.createElementNS(SVGNS, kind === 'dev' ? 'circle' : 'rect');
+  const col = cssVar(kind === 'dev' ? STATUS_VAR[status] : BLOCK_VAR[status]);
+  const hollow = kind === 'dev' ? status === 'open' : (status === 'textbook' || status === 'none');
+  if (kind === 'dev') { shape.setAttribute('cx', x); shape.setAttribute('cy', y); shape.setAttribute('r', 5.5); }
+  else { shape.setAttribute('x', x - 5.5); shape.setAttribute('y', y - 5.5); shape.setAttribute('width', 11); shape.setAttribute('height', 11); shape.setAttribute('rx', 2.5); }
+  shape.setAttribute('fill', hollow ? cssVar('--surface') : col);
+  shape.setAttribute('stroke', col); shape.setAttribute('stroke-width', 2);
+  if (kind === 'blk' && status === 'none') shape.setAttribute('stroke-dasharray', '3 2');
+  return shape;
+}
+
+function renderMap() {
+  const svg = $('#map');
+  const W = svg.clientWidth || 600;
+  const narrow = W < 560;
+  const colW = Math.min(250, (W - (narrow ? 34 : 90)) / 2);
+  const xL = colW, xR = W - colW;                 // edge anchors
+  const { rowsL, rowsR, H } = layout();
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('height', H);
+  svg.innerHTML = '';
+  const gE = document.createElementNS(SVGNS, 'g'), gN = document.createElementNS(SVGNS, 'g');
+  svg.append(gE, gN);
+  NODES = {}; EDGES = [];
+  const yOf = {};
+  rowsL.forEach(r => { if (r.dev) yOf[r.dev.id] = r.y; });
+  rowsR.forEach(r => { if (r.blk) yOf[r.blk.id] = r.y; });
+  const head = (text, x, y, anchor) => { const t = document.createElementNS(SVGNS, 'text'); t.setAttribute('class', 'ghead'); t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('text-anchor', anchor); t.textContent = text; gN.appendChild(t); fitText(t, colW - 4); };
+  // edges
+  for (const d of COV.devices) for (const b of d.blocks) {
+    const p = document.createElementNS(SVGNS, 'path'), y1 = yOf[d.id], y2 = yOf[b], mx = (xL + xR) / 2;
+    p.setAttribute('d', `M${xL},${y1} C${mx},${y1} ${mx},${y2} ${xR},${y2}`);
+    p.setAttribute('class', 'edge'); gE.appendChild(p);
+    EDGES.push({ d: d.id, b, el: p });
+  }
+  // device nodes: label on the left, marker at the anchor
+  for (const r of rowsL) {
+    if (r.head) { head(r.head, 2, r.y, 'start'); continue; }
+    const d = r.dev, g = node('dev', d.id, d.label, d.status);
+    g.innerHTML = `<rect class="hit" x="0" y="${r.y - RH / 2 + 1}" width="${colW + 8}" height="${RH - 2}" rx="6"></rect>`;
+    const t = document.createElementNS(SVGNS, 'text'); t.setAttribute('x', 6); t.setAttribute('y', r.y + 4); t.textContent = d.label;
+    g.append(t, marker('dev', d.status, xL, r.y)); gN.appendChild(g); fitText(t, colW - 18);
+  }
+  // block nodes: marker at the anchor, label on the right, use count
+  for (const r of rowsR) {
+    if (r.head) { head(r.head, W - 2, r.y, 'end'); continue; }
+    const b = r.blk, g = node('blk', b.id, b.label, b.status);
+    g.innerHTML = `<rect class="hit" x="${xR - 8}" y="${r.y - RH / 2 + 1}" width="${colW + 8}" height="${RH - 2}" rx="6"></rect>`;
+    const t = document.createElementNS(SVGNS, 'text'); t.setAttribute('x', xR + 12); t.setAttribute('y', r.y + 4); t.textContent = b.label;
+    const c = document.createElementNS(SVGNS, 'text'); c.setAttribute('class', 'count'); c.setAttribute('x', W - 4); c.setAttribute('y', r.y + 4); c.setAttribute('text-anchor', 'end'); c.textContent = b.used_by.length;
+    g.append(t, c, marker('blk', b.status, xR, r.y)); gN.appendChild(g); fitText(t, colW - 34);
+  }
+  applyHighlight();
+}
+
+function node(kind, id, label, status) {
+  const g = document.createElementNS(SVGNS, 'g');
+  g.setAttribute('class', 'node'); g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
+  const n = kind === 'blk' ? BLK[id].used_by.length : DEV[id].blocks.length;
+  g.setAttribute('aria-label', kind === 'dev' ? `${label}, ${status}, ${n} building blocks` : `${label} block, ${status}, used by ${n} device types`);
+  const key = kind + ':' + id;
+  g.addEventListener('pointerenter', () => { S.hover = key; applyHighlight(); });
+  g.addEventListener('pointerleave', () => { S.hover = null; applyHighlight(); });
+  g.addEventListener('focus', () => { S.hover = key; applyHighlight(); });
+  g.addEventListener('blur', () => { S.hover = null; applyHighlight(); });
+  g.addEventListener('click', () => select(key));
+  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(key); } });
+  NODES[key] = g;
+  return g;
+}
+
+function select(key, scroll) {
+  S.pin = S.pin === key && !scroll ? null : key;
+  applyHighlight(); renderDetail();
+  if (S.pin && matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}
+
+function applyHighlight() {
+  const focus = S.hover || S.pin;
+  const lit = new Set(), litEdges = new Set();
+  if (focus) {
+    const [kind, id] = focus.split(':');
+    lit.add(focus);
+    EDGES.forEach((e, k) => { if ((kind === 'dev' && e.d === id) || (kind === 'blk' && e.b === id)) { litEdges.add(k); lit.add('dev:' + e.d); lit.add('blk:' + e.b); } });
+  }
+  const filtered = d => !passes(d);
+  for (const [key, g] of Object.entries(NODES)) {
+    const [kind, id] = key.split(':');
+    let dim = focus ? !lit.has(key) : false;
+    if (!focus) dim = kind === 'dev' ? filtered(DEV[id]) : BLK[id].used_by.every(x => filtered(DEV[x]));
+    g.classList.toggle('dim', dim);
+    g.classList.toggle('sel', key === S.pin);
+  }
+  EDGES.forEach((e, k) => {
+    const on = litEdges.has(k);
+    e.el.classList.toggle('on', on);
+    e.el.style.stroke = on ? cssVar(STATUS_VAR[DEV[e.d].status] === '--muted' ? '--ink' : STATUS_VAR[DEV[e.d].status]) : '';
+    e.el.classList.toggle('dim', focus ? !on : filtered(DEV[e.d]));
+    if (on) e.el.parentNode.appendChild(e.el);
+  });
+  if (!S.pin) renderDetail(S.hover);
+}
+
+// ---------- detail ----------
+const chip = (key, text, mk, small) => `<button type="button" class="chip" data-key="${key}">${mk}${esc(text)}${small ? `<small>${esc(small)}</small>` : ''}</button>`;
+function renderDetail(hoverKey) {
+  const key = S.pin || hoverKey;
+  const el = $('#detail');
+  if (!key) {
+    const top = [...COV.blocks].sort((a, b) => b.used_by.length - a.used_by.length).slice(0, 5);
+    el.innerHTML = `<p class="eyebrow">Overview</p><h2>Pick a device or a block</h2>
+      <p class="note">Each device type on the left is drawn from the building blocks on the right. A block model that is fitted once from solver data serves every device that uses it (route <b>compose</b>); the part that is not captured by the blocks, for example coupling between sections that are not neighbours, needs a small correction per device.</p>
+      <span class="lbl">Blocks used by the most device types</span>
+      <div class="chips">${top.map(b => chip('blk:' + b.id, b.label, `<i class="mk sq b-${b.status}"></i>`, b.used_by.length)).join('')}</div>`;
+  } else {
+    const [kind, id] = key.split(':');
+    if (kind === 'dev') {
+      const d = DEV[id], g = COV.groups.find(x => x.id === d.group).label;
+      const links = d.family_id ? `<a href="${REPO}/tree/main/families/${d.family_id}">Family folder and model card</a>` : d.status === 'open' ? `<a href="${REPO}/blob/main/CONTRIBUTING.md">How to propose this device</a>` : '';
+      el.innerHTML = `<p class="eyebrow">${esc(g)}</p><h2>${esc(d.label)}</h2>
+        <div><span class="badge"><i class="mk s-${d.status}"></i>${d.status}</span></div>
+        <p>${esc(d.desc)}</p>
+        <dl class="kv"><dt>Status</dt><dd>${esc(COV.device_status[d.status])}</dd><dt>Outputs</dt><dd>${esc(d.outputs)}</dd>
+        <dt>Routes</dt><dd>${(d.routes || []).map(r => `<b>${r}</b>: ${esc(COV.routes[r])}`).join('<br>') || '-'}</dd>
+        ${d.family_id ? `<dt>Family id</dt><dd><code>${esc(d.family_id)}</code></dd>` : ''}</dl>
+        <span class="lbl">Building blocks (${d.blocks.length})</span>
+        <div class="chips">${d.blocks.map(b => chip('blk:' + b, BLK[b].label, `<i class="mk sq b-${BLK[b].status}"></i>`, BLK[b].status)).join('') || '<span class="note">None: this device does not split into blocks.</span>'}</div>
+        ${(d.related || []).length ? `<span class="lbl">Related</span><div class="chips">${d.related.map(r => chip('dev:' + r.id, DEV[r.id].label, `<i class="mk s-${DEV[r.id].status}"></i>`, r.why)).join('')}</div>` : ''}
+        ${links ? `<p class="note">${links}</p>` : ''}`;
+    } else {
+      const b = BLK[id], k = COV.block_kinds.find(x => x.id === b.kind).label;
+      el.innerHTML = `<p class="eyebrow">Building block &middot; ${esc(k)}</p><h2>${esc(b.label)}</h2>
+        <div><span class="badge"><i class="mk sq b-${b.status}"></i>${b.status}</span></div>
+        <p>${esc(b.desc)}</p>
+        <dl class="kv"><dt>Status</dt><dd>${esc(COV.block_status[b.status])}</dd><dt>Used by</dt><dd>${b.used_by.length} device type${b.used_by.length === 1 ? '' : 's'}</dd></dl>
+        <span class="lbl">Devices that use it</span>
+        <div class="chips">${b.used_by.map(x => chip('dev:' + x, DEV[x].label, `<i class="mk s-${DEV[x].status}"></i>`)).join('')}</div>`;
+    }
+  }
+  el.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    const k = c.dataset.key;
+    if (S.view === 'map' && NODES[k]) { S.pin = k; applyHighlight(); renderDetail(); NODES[k].focus({ preventScroll: true }); }
+    else { S.pin = k; renderDetail(); }
+  }));
+}
+
+// ---------- table ----------
+function renderTable() {
+  const rows = [];
+  for (const g of COV.groups) {
+    const ds = COV.devices.filter(d => d.group === g.id);
+    if (!ds.length) continue;
+    rows.push(`<tr class="grp"><td colspan="4">${esc(g.label)}</td></tr>`);
+    for (const d of ds) rows.push(`<tr class="row${passes(d) ? '' : ' dim'}" data-key="dev:${d.id}" tabindex="0"><td>${esc(d.label)}</td><td><i class="mk s-${d.status}"></i>${d.status}</td><td>${(d.routes || []).join(', ')}</td><td>${d.blocks.map(b => esc(BLK[b].label)).join(', ') || '-'}</td></tr>`);
+  }
+  $('#covBody').innerHTML = rows.join('');
+  $('#covBody').querySelectorAll('tr.row').forEach(tr => {
+    const go = () => { S.pin = tr.dataset.key; renderDetail(); if (matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ block: 'start' }); };
+    tr.addEventListener('click', go);
+    tr.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  });
+}
+
+function renderView() {
+  $('#mapView').hidden = S.view !== 'map'; $('#tableView').hidden = S.view !== 'table'; $('#mapHint').hidden = S.view !== 'map';
+  if (S.view === 'map') renderMap(); else renderTable();
+}
+
+// ---------- start ----------
+async function start() {
+  Theme.init();
+  try {
+    const r = await fetch('coverage.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    COV = await r.json();
+  } catch (e) {
+    $('#loadErr').hidden = false; $('#loadErr').textContent = 'Could not load coverage.json (' + e.message + '). Serve the web folder with a static server, for example python -m http.server --directory web.';
+    $('#mapView').hidden = true; return;
+  }
+  COV.devices.forEach(d => { DEV[d.id] = d; });
+  COV.blocks.forEach(b => { BLK[b.id] = b; });
+  segment($('#statusSeg'), [['all', 'All'], ...Object.keys(COV.device_status).map(s => [s, s[0].toUpperCase() + s.slice(1)])], 'status', () => { applyHighlight(); if (S.view === 'table') renderTable(); });
+  segment($('#routeSeg'), [['all', 'All'], ...Object.keys(COV.routes).map(s => [s, s])], 'route', () => { applyHighlight(); if (S.view === 'table') renderTable(); });
+  segment($('#viewSeg'), [['map', 'Map'], ['table', 'Table']], 'view', renderView);
+  renderSummary(); renderDetail(); renderView();
+  Theme.on(() => { if (S.view === 'map') renderMap(); });
+  let w = $('#map').clientWidth;
+  new ResizeObserver(() => { const n = $('#map').clientWidth; if (n !== w && S.view === 'map') { w = n; renderMap(); } }).observe($('#mapCard'));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (S.view === 'map') renderMap(); });
+}
+start();
+</script>
+</body>
+</html>

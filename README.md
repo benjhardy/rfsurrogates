@@ -19,6 +19,10 @@ Status v0.1 (2026-10-26): one family, data from one contributor, contributions o
 Simulated against simulated. Nothing here was measured. Details and limits: the
 [model card](families/edge_coupled_bpf/MODEL_CARD.md).
 
+Coverage: [docs/COVERAGE.md](docs/COVERAGE.md) lists 31 passive device types and the 20 building blocks they are made
+of, with the status of each (surrogate, planned, experiment, open). `web/coverage.html` shows the same map as an
+interactive graph.
+
 ## Quick start
 
 ```
@@ -59,13 +63,14 @@ trunk) is a research question for when there are two or three families; the resu
 | path | content |
 |---|---|
 | `families.json`, `registry.py` | the device-family registry |
+| `coverage.json` | the coverage map: device types, building blocks, status (`tools/make_coverage.py` writes `docs/COVERAGE.md` and `web/coverage.json`) |
 | `families/<family_id>/` | generator, prior, box (`samples.json`), validity rule (`family.py`), results, figures, model card |
 | `core/` | data loader, network, trainer, evaluation, inverse design, prediction from checkpoints, web export |
 | `contrib/check_sample.py` | the checker every record goes through |
 | `data_index/<family_id>/manifest.jsonl` | one row per record: provenance, checks, hashes |
 | `tools/` | records from solver output, model card, Hugging Face staging and fetch |
 | `web/` | the browser page: a dependency-free JavaScript port of the prior and the network, and `rfscene.js`, a reusable 3D view of layered devices (`web/README.md`) |
-| `docs/` | data contract, fidelity policy, project design, experiment reports |
+| `docs/` | data contract, fidelity policy, project design, coverage, agent roles (draft), experiment reports |
 
 ## Data and weights
 
