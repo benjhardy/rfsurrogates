@@ -64,7 +64,7 @@ trunk) is a research question for when there are two or three families; the resu
 | `contrib/check_sample.py` | the checker every record goes through |
 | `data_index/<family_id>/manifest.jsonl` | one row per record: provenance, checks, hashes |
 | `tools/` | records from solver output, model card, Hugging Face staging and fetch |
-| `web/` | the browser page: a dependency-free JavaScript port of the prior and the network |
+| `web/` | the browser page: a dependency-free JavaScript port of the prior and the network, and `rfscene.js`, a reusable 3D view of layered devices (`web/README.md`) |
 | `docs/` | data contract, fidelity policy, project design, experiment reports |
 
 ## Data and weights

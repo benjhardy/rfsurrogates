@@ -473,6 +473,26 @@
     return Math.min(g1 - Math.max(0, (w2 - w1) / 2), g2 - Math.max(0, (w1 - w2) / 2), g1 - Math.max(0, (W50 - w1) / 2));
   }
   const isValid = p => clearance(p) > C_MIN;
+  const L_FEED = 3.0;          // mm, feed length de-embedded by the wave ports (build_case.L_FEED)
+  /** Copper rectangles of build_case.layout(p): strips [x0, y0, dx, dy, row] (strips first), feeds, row axes, sections. */
+  function layout(p) {
+    const [w1, w2, g1, g2, l1, l2] = p;
+    const y = [0];
+    for (const dy of [w1 + g1, w2 + g2, w2 + g2, w1 + g1]) y.push(y[y.length - 1] + dy);
+    const lx = 2 * l1 + 2 * l2;
+    const strips = [[0, y[0] - w1 / 2, l1, w1, 0],
+      [0, y[1] - w1 / 2, l1, w1, 1], [l1, y[1] - w2 / 2, l2, w2, 1],
+      [l1, y[2] - w2 / 2, 2 * l2, w2, 2],
+      [l1 + l2, y[3] - w2 / 2, l2, w2, 3], [l1 + 2 * l2, y[3] - w1 / 2, l1, w1, 3],
+      [l1 + 2 * l2, y[4] - w1 / 2, l1, w1, 4]];
+    const feeds = [[-L_FEED, y[0] - W50 / 2, L_FEED, W50], [lx, y[4] - W50 / 2, L_FEED, W50]];
+    const sections = [
+      { n: 1, x: [0, l1], gapY: [y[0] + w1 / 2, y[1] - w1 / 2], box: [0, y[0] - w1 / 2, l1, y[1] + w1 / 2] },
+      { n: 2, x: [l1, l1 + l2], gapY: [y[1] + w2 / 2, y[2] - w2 / 2], box: [l1, y[1] - w2 / 2, l1 + l2, y[2] + w2 / 2] },
+      { n: 3, x: [l1 + l2, l1 + 2 * l2], gapY: [y[2] + w2 / 2, y[3] - w2 / 2], box: [l1 + l2, y[2] - w2 / 2, l1 + 2 * l2, y[3] + w2 / 2] },
+      { n: 4, x: [l1 + 2 * l2, lx], gapY: [y[3] + w1 / 2, y[4] - w1 / 2], box: [l1 + 2 * l2, y[3] - w1 / 2, lx, y[4] + w1 / 2] }];
+    return { strips, feeds, rowY: y, lx, w50: W50, lFeed: L_FEED, sections };
+  }
   /** Normalised distance to the nearest box edge over the varying parameters (0 = edge, 0.5 = centre). */
   function distanceToBoxEdge(p, box, names) {
     let d = 0.5;
@@ -598,6 +618,6 @@
     microstrip, openEndExtension, kobayashiEeff, coupledMicrostrip, filterSections, sPrior, tandFor,
     erf, erfExact, gelu, load, prepareModel, evalModel, correction, predict, trunkAt, trunkFast, buildTable, returnLoss,
     db, centroidFreq, bandEdges, findPeaks, passbandIsSplit, interp, metrics,
-    clearance, isValid, distanceToBoxEdge, inverse, nelderMead, lhs, rng,
+    clearance, isValid, layout, distanceToBoxEdge, inverse, nelderMead, lhs, rng,
   };
 });

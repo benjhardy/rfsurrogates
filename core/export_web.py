@@ -216,6 +216,11 @@ def export_check(n: int, seed: int = 20261026) -> Path:
         s11, s21 = PW.s_prior(p, f)                             # full float64 prior for the exact prior check
         s_prior64[i, 0], s_prior64[i, 1], s_prior64[i, 2], s_prior64[i, 3] = s11.real, s11.imag, s21.real, s21.imag
         out["prior"].append({"s11re": s11.real.tolist(), "s11im": s11.imag.tolist(), "s21re": s21.real.tolist(), "s21im": s21.imag.tolist()})
+    try:                                                        # copper layout of build_case.py, for the 3D view
+        import build_case                                       # noqa: E402  (needs gmsh)
+        out["layout"] = [[list(map(float, r)) for r in build_case.layout(list(p))[0]] for p in P]
+    except ImportError as e:
+        print(f"[export] layout reference skipped: {e}")
     ft = torch.as_tensor(f, dtype=torch.float32)
     pt = torch.as_tensor(P, dtype=torch.float32)
     spt = torch.as_tensor(s_prior, dtype=torch.float32)

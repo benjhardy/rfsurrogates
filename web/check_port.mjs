@@ -43,6 +43,18 @@ for (let i = 0; i < N; i++) {
 console.log(`(a) prior vs prior.py: max |dS| = ${ex(priorMax)} (target < 1e-9) ${ok(priorMax, 1e-9)}`);
 chk(priorMax, 1e-9);
 
+// (e) copper layout (3D view) vs build_case.layout: strips then feeds, [x0, y0, dx, dy] in mm
+if (R.layout) {
+  let layMax = 0;
+  for (let i = 0; i < N; i++) {
+    const L = Surrogate.layout(R.p[i]), js = [...L.strips, ...L.feeds];
+    if (js.length !== R.layout[i].length) layMax = Infinity;
+    else js.forEach((r, k) => { for (let c = 0; c < 4; c++) layMax = Math.max(layMax, Math.abs(r[c] - R.layout[i][k][c])); });
+  }
+  console.log(`(e) layout vs build_case.layout: max |d| = ${ex(layMax)} mm (target < 1e-4, W50 rounded to 0.1 um) ${ok(layMax, 1e-4)}`);
+  chk(layMax, 1e-4);
+}
+
 // (b), (d): exact JS path vs torch float64 / float32
 const exactRes = {};
 for (const key in R.ensembles) {

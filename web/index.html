@@ -47,12 +47,12 @@ button { font-family: var(--body); }
 .topbar { max-width: 1240px; margin: 0 auto; padding: 14px 20px 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .topbar a.home { font: 600 0.78rem/1 var(--mono); letter-spacing: 0.06em; color: var(--muted); text-decoration: none; padding: 8px 0; }
 .topbar a.home:hover { color: var(--ink); }
-.wrap { max-width: 1240px; margin: 0 auto; padding: 12px 20px 56px; display: grid; gap: 24px; }
-.hero { display: grid; gap: 8px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 12px 20px 56px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 .devrow { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
 .devrow select { width: auto; max-width: 100%; }
 .calc { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; align-items: start; }
-@media (max-width: 980px) { .calc { grid-template-columns: 1fr; } }
+@media (max-width: 980px) { .calc { grid-template-columns: minmax(0, 1fr); } }
 .col { display: grid; gap: 18px; min-width: 0; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
 .pad { padding: 16px 18px; display: grid; gap: 12px; align-content: start; }
@@ -93,6 +93,15 @@ input.bad { border-color: var(--bad); }
 #plot { display: block; width: 100%; aspect-ratio: 16 / 8; }
 @media (max-width: 640px) { #plot { aspect-ratio: 4 / 3; } }
 .plotwrap { position: relative; }
+.stage3d { position: relative; aspect-ratio: 16 / 9; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+.stage3d canvas { display: block; width: 100%; height: 100%; outline: none; }
+.stage3d canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); }
+.stage3d .fallback { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center; color: var(--muted); font-size: 14px; }
+.tools3d { display: flex; flex-wrap: wrap; gap: 6px; }
+.tools3d .btn[aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.key3d { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.key3d i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+@media (max-width: 640px) { .stage3d { aspect-ratio: 4 / 3; } }
 .tip { position: absolute; z-index: 2; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: 500 0.74rem/1.4 var(--mono); color: var(--ink); box-shadow: 0 2px 10px rgba(0,0,0,0.12); max-width: 260px; }
 .msgs { display: grid; gap: 6px; }
 .msg { font-size: 0.86rem; border-radius: 8px; padding: 8px 10px; border: 1px solid var(--line); background: var(--bg); }
@@ -157,6 +166,19 @@ footer.foot a { color: var(--muted); }
         <div class="pad">
           <div class="readout" id="metricsOut"></div>
           <p class="note" id="metricsNote">f0 = |S21|&sup2;-weighted centroid over 3&ndash;7 GHz (continuous when the passband splits). 3 dB bandwidth = widest band within 3 dB of the |S21| peak; it is flagged when two peaks within 6 dB of the maximum are separated by a dip deeper than 3 dB (split passband, no single 3 dB band). Return loss = worst |S11| between the outer reflection zeros, as in the repo's prior diagnostics. Spread = mean over the passband of the standard deviation of |S21| in dB across the five seeds.</p>
+        </div>
+      </div>
+
+      <div class="card" id="sceneCard">
+        <div class="vbar">
+          <h3>Layout in 3D</h3>
+          <div class="tools3d" id="sceneTools" role="group" aria-label="3D view controls"></div>
+        </div>
+        <div class="stage3d" id="stage3d"><div class="fallback" id="sceneFallback" hidden>The 3D view needs WebGL, which this browser does not provide. The rest of the page works without it.</div></div>
+        <div class="pad">
+          <div class="key3d"><span><i style="background:var(--accent)"></i>incident at port 1</span><span><i style="background:var(--ok)"></i>transmitted to port 2, size &prop; |S21|</span><span><i style="background:var(--field)"></i>reflected at port 1, size &prop; |S11|</span></div>
+          <p class="note" id="sceneNote"></p>
+          <p class="note">The layout is drawn from the same rectangles as <code>build_case.py</code> and moves with the sliders; point at a slider to highlight that dimension. The pulses show |S21| and |S11| at one frequency; they are not a field solution. Copper is drawn 35 &micro;m thick so that it is visible (the solver uses a zero-thickness sheet). The thin box is the air region with absorbing walls; the blue faces are the two wave ports. Drag to turn; with the view focused: arrow keys, + and &minus;, 0 to reset, E for the exploded view.</p>
         </div>
       </div>
 
@@ -267,6 +289,9 @@ footer.foot a { color: var(--muted); }
   <footer class="foot"><span>Made by Ben Hardy</span><a href="https://benjhardy.github.io/">benjhardy.github.io</a><span>MIT licence</span><span>Simulation only; nothing on this page is measured.</span></footer>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="rfscene.js"></script>
 <script src="surrogate.js"></script>
 <script>
 'use strict';
@@ -323,6 +348,7 @@ const DEVICES = {
     prior: Surrogate.sPrior,
     predict: Surrogate.predict, metrics: Surrogate.metrics, inverse: Surrogate.inverse,
     clearance: Surrogate.clearance, cMin: Surrogate.C_MIN,
+    scene: p => filterScene(p),
     validityText: 'Validity rule: clearance > 0.05 mm, clearance = min(g₁ − max(0, (w₂ − w₁)/2), g₂ − max(0, (w₁ − w₂)/2), g₁ − max(0, (W50 − w₁)/2)). Below zero the strips fuse into one conductor in the centred-step layout; between 0 and 0.05 mm the production mesh cannot resolve the corner. The training data contain only valid geometries.',
     trusted: Surrogate.TRUSTED,
     plot: { fMin: 3, fMax: 7, dbMin: -60, dbMax: 0 },
@@ -345,6 +371,70 @@ const fmtP = v => (Math.abs(v) >= 100 ? v.toPrecision(6) : +v.toFixed(5)).toStri
 // ---------- state ----------
 let DEV = null, SUR = null, REFS = null, P = null, MODE = 'stageB', PAL = null, RES = null, MET = null, HOVER = -1, CANDS = [];
 const idx = key => SUR.paramNames.indexOf(key);
+
+// ---------- 3D layout (rfscene.js, reusable for other device families) ----------
+let VIEW = null;
+const H_AIR = 8, MARGIN = 6, T_CU = 0.035;     // build_case.py: air above the substrate, side margin; drawn copper thickness
+function filterScene(p) {
+  const L = Surrogate.layout(p), h = p[7], [w1, , , , l1, l2] = p, rows = L.rowY;
+  const all = [...L.strips, ...L.feeds];
+  const yMin = Math.min(...all.map(r => r[1])) - MARGIN, yMax = Math.max(...all.map(r => r[1] + r[3])) + MARGIN;
+  const x0 = -L.lFeed, x1 = L.lx + L.lFeed, zc = h + T_CU, yc = (yMin + yMax) / 2;
+  const stripTags = [['w1', 'l1'], ['w1', 'l1'], ['w2', 'l2'], ['w2', 'l2'], ['w2', 'l2'], ['w1', 'l1'], ['w1', 'l1']];
+  const outer = s => s.n === 1 || s.n === 4;
+  const gapMid = s => [(s.x[0] + s.x[1]) / 2, (s.gapY[0] + s.gapY[1]) / 2, zc + 0.5];
+  return {
+    explodeGap: 2.2, labelSize: 1.6, frame: ['copper', 'substrate'], fit: 0.7,
+    layers: [
+      { id: 'ground', kind: 'ground', z0: -T_CU, z1: 0, shapes: [{ rect: [x0, yMin, x1, yMax] }] },
+      { id: 'substrate', kind: 'dielectric', z0: 0, z1: h, shapes: [{ rect: [x0, yMin, x1, yMax] }] },
+      { id: 'copper', kind: 'metal', z0: h, z1: zc, shapes: [
+        ...L.strips.map((r, k) => ({ rect: [r[0], r[1], r[0] + r[2], r[1] + r[3]], tags: stripTags[k] })),
+        ...L.feeds.map(r => ({ rect: [r[0], r[1], r[0] + r[2], r[1] + r[3]], tags: ['feed'] }))] },
+      { id: 'markers', kind: 'marker', stack: 2, z0: h, z1: zc + 0.06, shapes: [
+        ...L.sections.map(s => ({ rect: [s.x[0], s.gapY[0], s.x[1], Math.max(s.gapY[1], s.gapY[0] + 0.01)], tags: [outer(s) ? 'g1' : 'g2'] })),
+        ...L.sections.map(s => ({ rect: [s.x[0], s.box[1] - 0.2, s.x[1], s.box[3] + 0.2], z0: zc + 0.08, z1: zc + 0.1, tags: [outer(s) ? 'l1' : 'l2'] }))] },
+      { id: 'air', kind: 'outline', stack: 0, z0: 0, z1: h + H_AIR, shapes: [{ rect: [x0, yMin, x1, yMax] }] },
+    ],
+    ports: [{ name: 'Port 1', at: [x0, yc, (h + H_AIR) / 2], size: [yMax - yMin, h + H_AIR], normal: 'x' },
+            { name: 'Port 2', at: [x1, yc, (h + H_AIR) / 2], size: [yMax - yMin, h + H_AIR], normal: 'x' }],
+    labels: [
+      { text: 'w\u2081', at: [l1 / 2, rows[0] - w1 / 2 - 0.9, zc + 0.5], tags: ['w1'], stack: 2 },
+      { text: 'w\u2082', at: [l1 + l2, rows[2], zc + 0.9], tags: ['w2'], stack: 2 },
+      ...L.sections.map(s => ({ text: outer(s) ? 'g\u2081' : 'g\u2082', at: gapMid(s), tags: [outer(s) ? 'g1' : 'g2'], stack: 2 })),
+      ...L.sections.map(s => ({ text: outer(s) ? 'l\u2081' : 'l\u2082', at: [(s.x[0] + s.x[1]) / 2, s.box[3] + 0.9, zc + 0.3], tags: [outer(s) ? 'l1' : 'l2'], stack: 2 })),
+      { text: 'RO4350B', at: [x1 - 3.5, yMin + 1.2, h + 0.4], stack: 1 },
+    ],
+    signal: { in: [[x0, rows[0], zc + 0.25], [0, rows[0], zc + 0.25]], out: [[L.lx, rows[4], zc + 0.25], [x1, rows[4], zc + 0.25]], radius: 0.55, stack: 2 },
+  };
+}
+function sceneColors() {
+  const c = Theme.c, dark = c.rgb.surface[0] + c.rgb.surface[1] + c.rgb.surface[2] < 300;
+  return { bg: c.surface, ink: c.ink, muted: c.muted, outline: c.muted, marker: c.accent, port: c.accent, incident: c.accent,
+           reflected: c.field, transmitted: c.ok, warn: c.bad,
+           copper: dark ? '#D9955A' : '#C27C3E', ground: dark ? '#9C6A3E' : '#8C5A30', dielectric: dark ? '#4E6656' : '#C9D8BF' };
+}
+function initScene() {
+  if (!window.RFScene || !RFScene.supported()) { $('#sceneFallback').hidden = false; return; }
+  VIEW = RFScene.create($('#stage3d'), { colors: sceneColors(), toolbar: $('#sceneTools'), buttonClass: 'btn', font: 'Public Sans, system-ui, sans-serif',
+    label: 'Edge-coupled filter on its substrate in 3D: ground, substrate, copper strips and the two wave ports; the geometry follows the sliders' });
+  Theme.on(() => VIEW.setColors(sceneColors()));
+}
+function renderScene() {
+  if (!VIEW || !P) return;
+  VIEW.setDevice(DEV.scene(P));
+  VIEW.tint('copper', DEV.clearance(P) > 0 ? null : Theme.c.bad);
+  sceneSignal();
+}
+function sceneSignal() {
+  if (!VIEW || !RES) return;
+  const f = RES.f, f0 = MET && isFinite(MET.f0) ? MET.f0 : (f[0] + f[f.length - 1]) / 2;
+  let k = HOVER;
+  if (k < 0) { k = 0; for (let i = 1; i < f.length; i++) if (Math.abs(f[i] - f0) < Math.abs(f[k] - f0)) k = i; }
+  VIEW.setSignal({ s11: Math.pow(10, RES.s11db[k] / 20), s21: Math.pow(10, RES.s21db[k] / 20) });
+  $('#sceneNote').innerHTML = `At <b>${f[k].toFixed(2)} GHz</b> (${HOVER >= 0 ? 'plot cursor' : 'f0; point at the plot to choose another frequency'}): |S21| ${RES.s21db[k].toFixed(1)} dB, |S11| ${RES.s11db[k].toFixed(1)} dB.`
+    + (DEV.clearance(P) > 0 ? '' : ' <b>Fused geometry:</b> the copper is drawn in red because neighbouring strips overlap; this is not a coupled-line filter, and the model has no training data here.');
+}
 
 async function loadDevice(id) {
   DEV = DEVICES[id];
@@ -386,6 +476,9 @@ function buildSliders() {
     d.innerHTML = `<label for="n_${q.key}">${q.label} <span class="u">(${q.unit}) · ${q.desc} · ${lo.toFixed(3)}–${hi.toFixed(3)}</span></label>
       <div class="slide"><input type="range" id="r_${q.key}" min="${lo}" max="${hi}" step="${step}" aria-label="${q.key} slider"><input type="number" id="n_${q.key}" min="${lo.toFixed(4)}" max="${hi.toFixed(4)}" step="0.001"></div>`;
     host.appendChild(d);
+    const hl = on => VIEW && VIEW.highlight(on ? q.key : null);
+    d.addEventListener('pointerenter', () => hl(true)); d.addEventListener('pointerleave', () => { if (!d.contains(document.activeElement)) hl(false); });
+    d.addEventListener('focusin', () => hl(true)); d.addEventListener('focusout', () => hl(false));
     const r = $('#r_' + q.key), n = $('#n_' + q.key);
     r.addEventListener('input', () => { P[i] = +r.value; n.value = (+r.value).toFixed(4); dropPalace(); update(); });
     n.addEventListener('change', () => { let v = +n.value; if (!isFinite(v)) v = P[i]; v = Math.min(hi, Math.max(lo, v)); P[i] = v; n.value = v.toFixed(4); r.value = v; dropPalace(); update(); });
@@ -409,7 +502,7 @@ function update() {
   if (!SUR) return;
   RES = DEV.predict(SUR, MODE, P);
   MET = DEV.metrics(RES);
-  renderGeom(); renderMetrics(); renderPlot(); renderRef(); renderVerify();
+  renderGeom(); renderMetrics(); renderPlot(); renderRef(); renderVerify(); renderScene();
 }
 function renderGeom() {
   const c = DEV.clearance(P), ok = c > DEV.cMin, dist = Surrogate.distanceToBoxEdge(P, SUR.box, SUR.paramNames);
@@ -475,7 +568,7 @@ function renderPlot() {
 }
 function bindPlotHover() {
   const cv = $('#plot'), tip = $('#plotTip');
-  const hide = () => { tip.hidden = true; if (HOVER >= 0) { HOVER = -1; renderPlot(); } };
+  const hide = () => { tip.hidden = true; if (HOVER >= 0) { HOVER = -1; renderPlot(); sceneSignal(); } };
   cv.addEventListener('mouseleave', hide);
   cv.addEventListener('pointermove', e => {
     if (!RES || !PLOT) return;
@@ -483,7 +576,7 @@ function bindPlotHover() {
     if (mx < PLOT.L || mx > PLOT.L + PLOT.pw) return hide();
     const f = RES.f, fr = DEV.plot.fMin + (mx - PLOT.L) / PLOT.pw * (DEV.plot.fMax - DEV.plot.fMin);
     let k = 0; for (let i = 1; i < f.length; i++) if (Math.abs(f[i] - fr) < Math.abs(f[k] - fr)) k = i;
-    if (k !== HOVER) { HOVER = k; renderPlot(); }
+    if (k !== HOVER) { HOVER = k; renderPlot(); sceneSignal(); }
     let h = `<b>${f[k].toFixed(2)} GHz</b><br>|S21| ${RES.s21db[k].toFixed(2)} dB${MODE !== 'prior' ? ` ± ${RES.std21[k].toFixed(2)}` : ''}<br>|S11| ${RES.s11db[k].toFixed(2)} dB${MODE !== 'prior' ? ` ± ${RES.std11[k].toFixed(2)}` : ''}`;
     if (MODE !== 'prior') h += `<br>prior ${RES.prior.s21db[k].toFixed(2)} / ${RES.prior.s11db[k].toFixed(2)} dB`;
     if (PAL) h += `<br>Palace ${PAL.s21_dB[k].toFixed(2)} / ${PAL.s11_dB[k].toFixed(2)} dB`;
@@ -572,6 +665,7 @@ function renderCands() {
 
 // ---------- boot ----------
 Theme.init(); Theme.on(renderPlot);
+initScene();
 bindPlotHover();
 window.addEventListener('resize', renderPlot);
 const devSel = $('#device');
