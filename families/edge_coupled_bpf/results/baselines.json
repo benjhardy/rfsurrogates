@@ -1,0 +1,172 @@
+{
+  "group": "all",
+  "n_train": 209,
+  "n_val": 26,
+  "n_test": 26,
+  "prior_only": {
+    "test": {
+      "mse": 0.02670907974243164,
+      "pb_db_mean": 2.610116958618164,
+      "pb_db_max": 13.9722318649292
+    }
+  },
+  "scratch_deeponet": {
+    "seed0": {
+      "test": {
+        "mse": 0.000470411847345531,
+        "pb_db_mean": 0.3031853437423706,
+        "pb_db_max": 1.6665000915527344
+      },
+      "epochs": 6000,
+      "seconds": 1015.889251947403,
+      "timing": {
+        "ms_per_query_batch1": 6.302194998716004,
+        "ms_per_query_batched": 0.5338542307771814,
+        "batch": 26
+      }
+    },
+    "seed1": {
+      "test": {
+        "mse": 0.0005076862289570272,
+        "pb_db_mean": 0.2951517105102539,
+        "pb_db_max": 2.2300519943237305
+      },
+      "epochs": 6000,
+      "seconds": 1005.3763661384583,
+      "timing": {
+        "ms_per_query_batch1": 6.124750000890344,
+        "ms_per_query_batched": 0.33929788467223543,
+        "batch": 26
+      }
+    },
+    "seed2": {
+      "test": {
+        "mse": 0.0004401609767228365,
+        "pb_db_mean": 0.30245137214660645,
+        "pb_db_max": 1.685373306274414
+      },
+      "epochs": 6000,
+      "seconds": 1014.8401420116425,
+      "timing": {
+        "ms_per_query_batch1": 5.663990002358332,
+        "ms_per_query_batched": 0.1752386539010331,
+        "batch": 26
+      }
+    },
+    "seed3": {
+      "test": {
+        "mse": 0.00039628343074582517,
+        "pb_db_mean": 0.2822969853878021,
+        "pb_db_max": 1.9768857955932617
+      },
+      "epochs": 6000,
+      "seconds": 1007.5705716609955,
+      "timing": {
+        "ms_per_query_batch1": 1.3029000023379922,
+        "ms_per_query_batched": 0.20044115394389686,
+        "batch": 26
+      }
+    },
+    "seed4": {
+      "test": {
+        "mse": 0.00045679000322707,
+        "pb_db_mean": 0.30912089347839355,
+        "pb_db_max": 2.073063850402832
+      },
+      "epochs": 6000,
+      "seconds": 1012.4509057998657,
+      "timing": {
+        "ms_per_query_batch1": 1.6097400017315522,
+        "ms_per_query_batched": 0.25495480770657125,
+        "batch": 26
+      }
+    },
+    "ensemble_test": {
+      "mse": 0.00036507967161014676,
+      "pb_db_mean": 0.28096240758895874,
+      "pb_db_max": 1.9043025970458984
+    }
+  },
+  "plain_mlp": {
+    "seed0": {
+      "test": {
+        "mse": 0.0066945175640285015,
+        "pb_db_mean": 2.232729911804199,
+        "pb_db_max": 13.947429656982422
+      },
+      "epochs": 5672,
+      "seconds": 98.42755103111267,
+      "n_parameters": 56996,
+      "timing": {
+        "ms_per_query_batch1": 0.6274300016229972,
+        "ms_per_query_batched": 0.01346769232231264,
+        "batch": 26
+      }
+    },
+    "seed1": {
+      "test": {
+        "mse": 0.006246049888432026,
+        "pb_db_mean": 2.300232172012329,
+        "pb_db_max": 14.21214485168457
+      },
+      "epochs": 4213,
+      "seconds": 71.69753456115723,
+      "n_parameters": 56996,
+      "timing": {
+        "ms_per_query_batch1": 1.2875349988462403,
+        "ms_per_query_batched": 0.010352692333981395,
+        "batch": 26
+      }
+    },
+    "seed2": {
+      "test": {
+        "mse": 0.006586065515875816,
+        "pb_db_mean": 2.47170090675354,
+        "pb_db_max": 14.118037223815918
+      },
+      "epochs": 3825,
+      "seconds": 66.93278098106384,
+      "n_parameters": 56996,
+      "timing": {
+        "ms_per_query_batch1": 0.20978499960619956,
+        "ms_per_query_batched": 0.08207923081219913,
+        "batch": 26
+      }
+    },
+    "seed3": {
+      "test": {
+        "mse": 0.005866623483598232,
+        "pb_db_mean": 2.2951865196228027,
+        "pb_db_max": 13.905357360839844
+      },
+      "epochs": 4841,
+      "seconds": 76.10742950439453,
+      "n_parameters": 56996,
+      "timing": {
+        "ms_per_query_batch1": 0.22215000062715262,
+        "ms_per_query_batched": 0.010947500077935938,
+        "batch": 26
+      }
+    },
+    "seed4": {
+      "test": {
+        "mse": 0.006493864580988884,
+        "pb_db_mean": 2.446761131286621,
+        "pb_db_max": 31.961551666259766
+      },
+      "epochs": 3268,
+      "seconds": 14.572657346725464,
+      "n_parameters": 56996,
+      "timing": {
+        "ms_per_query_batch1": 0.21967999928165227,
+        "ms_per_query_batched": 0.007844615342596976,
+        "batch": 26
+      }
+    },
+    "ensemble_test": {
+      "mse": 0.0050039635971188545,
+      "pb_db_mean": 2.2679848670959473,
+      "pb_db_max": 11.545367240905762
+    }
+  }
+}

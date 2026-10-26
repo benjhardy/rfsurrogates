@@ -1,0 +1,11 @@
+The simulation records of this project (the files in the Hugging Face dataset rfsurrogates/samples) and the data
+index (data_index/**) are licensed under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+Summary:         https://creativecommons.org/licenses/by/4.0/
+
+Attribution: name the project (rfsurrogates) and the contributors listed in the manifest rows (field
+"contributor") of the records you use. Each contributor keeps the copyright of the records they submitted and
+licenses them to everyone under CC BY 4.0 by submitting them.
+
+The code and the trained weights are licensed separately under the Apache License 2.0 (LICENSE).

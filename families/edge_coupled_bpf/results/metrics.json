@@ -1,0 +1,116 @@
+{
+  "methods": {
+    "prior_only": {
+      "n_dead_excluded": 0,
+      "n_split_passband": 20,
+      "passband_S21_dB_mean": 2.8635550003785353,
+      "passband_S21_dB_max": 13.9722318649292,
+      "passband_S21_dB_p90_of_sample_means": 4.274403810501099,
+      "f0_err_MHz_mean_abs": 61.03139657240648,
+      "f0_err_MHz_max_abs": 112.99753189086914,
+      "f0_err_pct_mean_abs": 1.2221614774517222,
+      "bw_err_MHz_mean_abs": 113.79249890645345,
+      "bw_err_pct_mean_abs": 20.924714904681235,
+      "S11_lin_mean_abs": 0.049985124299732536,
+      "S11_dB_mean_abs_where_above_m20dB": 0.8023474789582766,
+      "n": 26
+    },
+    "scratch": {
+      "n_dead_excluded": 0,
+      "n_split_passband": 20,
+      "passband_S21_dB_mean": 0.31967688251573306,
+      "passband_S21_dB_max": 1.9043035507202148,
+      "passband_S21_dB_p90_of_sample_means": 0.5070305168628693,
+      "f0_err_MHz_mean_abs": 4.170381105863131,
+      "f0_err_MHz_max_abs": 12.569904327392578,
+      "f0_err_pct_mean_abs": 0.08238334222976042,
+      "bw_err_MHz_mean_abs": 26.80627504984538,
+      "bw_err_pct_mean_abs": 7.383933946157575,
+      "S11_lin_mean_abs": 0.011709519787333332,
+      "S11_dB_mean_abs_where_above_m20dB": 0.1582713256088587,
+      "n": 26
+    },
+    "mlp": {
+      "n_dead_excluded": 0,
+      "n_split_passband": 20,
+      "passband_S21_dB_mean": 2.488914219232706,
+      "passband_S21_dB_max": 11.545367240905762,
+      "passband_S21_dB_p90_of_sample_means": 3.538224458694458,
+      "f0_err_MHz_mean_abs": 29.41443369938777,
+      "f0_err_MHz_max_abs": 107.43045806884766,
+      "f0_err_pct_mean_abs": 0.5813749166444582,
+      "bw_err_MHz_mean_abs": 76.27733548482259,
+      "bw_err_pct_mean_abs": 15.77125288971493,
+      "S11_lin_mean_abs": 0.03722017716902953,
+      "S11_dB_mean_abs_where_above_m20dB": 0.5240800013908973,
+      "n": 26
+    },
+    "stageB": {
+      "n_dead_excluded": 0,
+      "n_split_passband": 20,
+      "passband_S21_dB_mean": 0.5193747253372119,
+      "passband_S21_dB_max": 3.9736313819885254,
+      "passband_S21_dB_p90_of_sample_means": 0.9347967803478241,
+      "f0_err_MHz_mean_abs": 7.91023327754094,
+      "f0_err_MHz_max_abs": 34.008026123046875,
+      "f0_err_pct_mean_abs": 0.15531015515911323,
+      "bw_err_MHz_mean_abs": 10.809659957885742,
+      "bw_err_pct_mean_abs": 2.76088713619014,
+      "S11_lin_mean_abs": 0.011312654976231547,
+      "S11_dB_mean_abs_where_above_m20dB": 0.18144270233236826,
+      "n": 26
+    }
+  },
+  "calibration": {
+    "pearson_r": 0.551460176784729,
+    "spread_mean_db": 0.2188032567501068,
+    "error_mean_db": 0.5203942656517029,
+    "frac_error_below_2sigma": 0.23076923076923078
+  },
+  "timing_ms": {
+    "prior + DeepONet, batch 1": 4.476974999997765,
+    "prior + DeepONet, batched": 0.3279553077300079,
+    "Palace FEM per sample": 662565.0957854405,
+    "scratch DeepONet, batch 1": 4.200715001206845,
+    "plain MLP, batch 1": 0.5133159999968484
+  },
+  "stageC": {
+    "status": "not_run",
+    "reason": "no second substrate in the Palace data: a stage-C run here would be same-substrate few-shot, not a transfer test",
+    "label": "same-substrate few-shot, not run as transfer"
+  },
+  "box": {
+    "w1": [
+      0.618351596027987,
+      1.1483672497662616
+    ],
+    "w2": [
+      0.7539897246218125,
+      1.400266631440509
+    ],
+    "g1": [
+      0.12295713130221798,
+      0.22834895813269057
+    ],
+    "g2": [
+      0.41269711680305204,
+      0.7664375026342396
+    ],
+    "l1": [
+      7.275640497212646,
+      9.843513613875933
+    ],
+    "l2": [
+      7.244452196990461,
+      9.801317678281212
+    ],
+    "eps_r": [
+      3.66,
+      3.66
+    ],
+    "h": [
+      0.508,
+      0.508
+    ]
+  }
+}

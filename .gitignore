@@ -1,0 +1,17 @@
+__pycache__/
+.pytest_cache/
+.venv/
+dist/
+# per family: records, checkpoints and run folders live outside git (Hugging Face) or on the contributor's machine
+families/*/data/
+families/*/ckpt/
+families/*/runs/
+families/*/logs/
+families/*/runs_inverse/
+families/*/results/preds_*.npz
+families/*/results/learning_curve_preds.npz
+families/*/STOP
+families/*/queue*.txt
+# generated for the browser page by core/export_web.py (published with the weights)
+web/weights.json
+web/check_ref.json

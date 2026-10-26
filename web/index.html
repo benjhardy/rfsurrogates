@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #F1F4F7; --surface: #FFFFFF; --ink: #142230; --muted: #586678; --line: #D5DCE5; --grid: #E4E9EF;
+  --field: #D9472B; --hfield: #2B6CB0; --ok: #2A7F50; --bad: #C0392B; --warn: #B85A0B; --accent: #2160A8;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D131A; --surface: #141C26; --ink: #E3E9EF; --muted: #98A4B2; --line: #2A3644; --grid: #1F2B39;
+    --field: #FF8A5C; --hfield: #6FB0F0; --ok: #6BCB93; --bad: #FF8A80; --warn: #F0A050; --accent: #6FA8EA;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D131A; --surface: #141C26; --ink: #E3E9EF; --muted: #98A4B2; --line: #2A3644; --grid: #1F2B39;
+  --field: #FF8A5C; --hfield: #6FB0F0; --ok: #6BCB93; --bad: #FF8A80; --warn: #F0A050; --accent: #6FA8EA;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); margin: 0; overflow-x: hidden; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.08; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.6vw, 3rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.3rem, 2.6vw, 1.6rem); font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+h3.sub { margin-top: 18px; font-size: 0.98rem; }
+p { margin: 0; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+button { font-family: var(--body); }
+[hidden] { display: none !important; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 600 0.72rem/1.2 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.05rem; color: var(--muted); max-width: 72ch; }
+.note { font-size: 0.86rem; color: var(--muted); }
+.topbar { max-width: 1240px; margin: 0 auto; padding: 14px 20px 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.topbar a.home { font: 600 0.78rem/1 var(--mono); letter-spacing: 0.06em; color: var(--muted); text-decoration: none; padding: 8px 0; }
+.topbar a.home:hover { color: var(--ink); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 12px 20px 56px; display: grid; gap: 24px; }
+.hero { display: grid; gap: 8px; }
+.devrow { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.devrow select { width: auto; max-width: 100%; }
+.calc { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 980px) { .calc { grid-template-columns: 1fr; } }
+.col { display: grid; gap: 18px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.pad { padding: 16px 18px; display: grid; gap: 12px; align-content: start; }
+.vbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.vbar h3 { margin-right: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 10px 12px; border-top: 1px solid var(--line); font: 500 0.78rem/1.3 var(--mono); color: var(--muted); align-items: center; }
+.legend i { display: inline-block; width: 16px; height: 0; border-top: 2.5px solid currentColor; vertical-align: middle; margin-right: 5px; }
+.legend i.dash { border-top-style: dashed; }
+.legend i.band { height: 10px; border: 0; border-radius: 2px; opacity: 0.35; vertical-align: -1px; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { font: 600 0.8rem/1 var(--body); padding: 9px 11px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.btn { font: 600 0.84rem/1 var(--body); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); font-size: 1rem; padding: 14px 18px; }
+.btn.primary:disabled, .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.grp { display: grid; gap: 10px; }
+.grp + .grp { border-top: 1px solid var(--line); padding-top: 12px; }
+.lbl { font: 600 0.68rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.field { display: grid; gap: 4px; min-width: 0; align-content: start; }
+.field > label, .field > .lbl { font: 600 0.68rem/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.field label .u { text-transform: none; letter-spacing: 0; }
+.slide { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 8px; align-items: center; }
+input[type=range] { width: 100%; accent-color: var(--ink); margin: 0; min-width: 0; height: 28px; }
+input[type=number], input[type=text], select { font: 400 0.92rem/1.2 var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 8px; width: 100%; min-width: 0; }
+input.bad { border-color: var(--bad); }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 420px) { .three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 8px; }
+.readout div { background: var(--bg); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.readout span { display: block; font: 600 0.62rem/1.25 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.readout b { display: block; font: 600 1rem/1.3 var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.readout small { font: 500 0.72rem/1.3 var(--mono); color: var(--muted); }
+.readout b.warn { color: var(--warn); }
+.readout b.bad { color: var(--bad); }
+#plot { display: block; width: 100%; aspect-ratio: 16 / 8; }
+@media (max-width: 640px) { #plot { aspect-ratio: 4 / 3; } }
+.plotwrap { position: relative; }
+.tip { position: absolute; z-index: 2; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: 500 0.74rem/1.4 var(--mono); color: var(--ink); box-shadow: 0 2px 10px rgba(0,0,0,0.12); max-width: 260px; }
+.msgs { display: grid; gap: 6px; }
+.msg { font-size: 0.86rem; border-radius: 8px; padding: 8px 10px; border: 1px solid var(--line); background: var(--bg); }
+.msg.e { border-color: var(--bad); color: var(--bad); }
+.msg.w { border-color: var(--warn); }
+.msg.w b { color: var(--warn); }
+table.ref { border-collapse: collapse; width: 100%; font: 500 0.8rem/1.35 var(--mono); font-variant-numeric: tabular-nums; }
+table.ref th, table.ref td { text-align: right; padding: 5px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.ref th:first-child, table.ref td:first-child { text-align: left; }
+table.ref thead th { font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+table.ref tr.hl td { color: var(--field); font-weight: 600; }
+table.ref tr.pick { cursor: pointer; }
+table.ref tr.pick:hover td { background: var(--bg); }
+.tblwrap { overflow-x: auto; max-width: 100%; }
+details summary { cursor: pointer; font: 600 0.8rem/1.4 var(--mono); color: var(--muted); }
+pre.cmd { font: 500 0.78rem/1.55 var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 0; overflow-x: auto; white-space: pre; max-width: 100%; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 18px; align-items: start; }
+.refs { margin: 0; padding-left: 18px; font-size: 0.86rem; color: var(--muted); display: grid; gap: 6px; }
+.links { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.92rem; }
+footer.foot { border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.84rem; color: var(--muted); }
+footer.foot a { color: var(--muted); }
+.status { font: 500 0.82rem/1.4 var(--mono); color: var(--muted); }
+.status.ok { color: var(--ok); }
+.status.bad { color: var(--bad); }
+.stepper { display: flex; gap: 6px; flex-wrap: wrap; }
+@media (max-width: 600px) {
+  .topbar { padding-inline: 16px; }
+  .wrap { padding-inline: 16px; gap: 20px; }
+  .pad { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<title>Filter Surrogate</title>
+<meta name="description" content="Edge-coupled microstrip band-pass filter surrogate in the browser: an analytic coupled-line prior plus a DeepONet correction trained on 261 Palace FEM solves. Set the six geometry parameters, read |S21| and |S11|, compare with Palace references, and search for a geometry from f0, bandwidth and return loss. Simulation only.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Filter Surrogate">
+<meta property="og:description" content="Edge-coupled microstrip band-pass filter, 3-7 GHz, RO4350B: prior + learned correction trained on 261 Palace FEM solves, running in the browser, with inverse design and Palace references.">
+<meta property="og:image" content="https://benjhardy.github.io/2026/filter-surrogate/filter-surrogate.png">
+<meta property="og:url" content="https://benjhardy.github.io/filter-surrogate/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div class="topbar"><a class="home" href="/agent-rf/">&larr; agent.rf lab</a><button class="btn" id="themeBtn" type="button">Dark</button></div>
+<main class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Inverse design for passive devices &middot; rfsurrogates</p>
+    <div class="devrow"><label class="lbl" for="device">Device</label><select id="device" aria-label="Device family"></select><span class="status" id="loadStatus" aria-live="polite">Loading weights&hellip;</span></div>
+    <h1>Filter Surrogate</h1>
+    <p class="lede" id="lede">Edge-coupled microstrip band-pass filter, 3&ndash;7 GHz, RO4350B (&epsilon;<sub>r</sub> 3.66, h 0.508 mm): an analytic coupled-line prior plus a learned correction trained on 261 Palace FEM solves. Runs in your browser. Simulation only.</p>
+  </header>
+
+  <section class="calc" aria-label="Surrogate">
+    <div class="col">
+      <div class="card">
+        <div class="vbar">
+          <h3>Response</h3>
+          <div class="seg" id="modelSeg" role="group" aria-label="Model"></div>
+        </div>
+        <div class="plotwrap"><canvas id="plot" role="img" aria-label="|S21| and |S11| in dB against frequency: ensemble mean with a one-sigma band over seeds, the prior as a dashed line and, when loaded, the Palace reference"></canvas><div class="tip" id="plotTip" hidden></div></div>
+        <div class="legend" id="plotLeg"></div>
+        <div class="pad">
+          <div class="readout" id="metricsOut"></div>
+          <p class="note" id="metricsNote">f0 = |S21|&sup2;-weighted centroid over 3&ndash;7 GHz (continuous when the passband splits). 3 dB bandwidth = widest band within 3 dB of the |S21| peak; it is flagged when two peaks within 6 dB of the maximum are separated by a dip deeper than 3 dB (split passband, no single 3 dB band). Return loss = worst |S11| between the outer reflection zeros, as in the repo's prior diagnostics. Spread = mean over the passband of the standard deviation of |S21| in dB across the five seeds.</p>
+        </div>
+      </div>
+
+      <div class="card pad" id="inverseCard">
+        <h3>Inverse design</h3>
+        <p class="note">Give a centre frequency, a 3 dB bandwidth and a return-loss floor. The page draws 256 Latin-hypercube points in the box, keeps the valid geometries, scores them with the selected model, and refines the best eight with Nelder&ndash;Mead. Objective: weighted squared f0 and BW error plus hinge penalties for return loss and rejection, a penalty for a split passband and for an invalid geometry. Lengths and widths stay inside the sampling box.</p>
+        <div class="three">
+          <div class="field"><label for="specF0">f0 <span class="u">(GHz)</span></label><input type="number" id="specF0" step="0.01" value="5.2"></div>
+          <div class="field"><label for="specBW">3 dB BW <span class="u">(GHz)</span></label><input type="number" id="specBW" step="0.01" value="0.5"></div>
+          <div class="field"><label for="specRL">Min return loss <span class="u">(dB)</span></label><input type="number" id="specRL" step="0.5" value="10"></div>
+        </div>
+        <div class="field"><label for="specRej">Rejection <span class="u">(optional, "f:dB" list, e.g. 6.4:30, 3.6:25)</span></label><input type="text" id="specRej" placeholder="6.4:30"></div>
+        <div class="msgs" id="specMsgs" aria-live="polite"></div>
+        <div class="row"><button class="btn primary" id="findBtn" type="button" disabled>Find geometry</button><span class="status" id="findStatus" aria-live="polite"></span></div>
+        <div class="tblwrap"><table class="ref" id="candTbl" hidden></table></div>
+        <p class="note" id="candNote" hidden>Click a row to load it into the sliders. Candidates are ranked by the objective; a split passband adds 10 to it.</p>
+      </div>
+
+      <div class="card pad" id="accuracy">
+        <h3>How good is the surrogate?</h3>
+        <p class="note">Held-out test split: 26 Palace designs the models never saw (80/10/10 split of 261 valid samples, same split for every method). Passband error = mean |&Delta;|S21|| in dB where the Palace |S21| is within 3 dB of its peak; f0 error on the |S21|&sup2; centroid.</p>
+        <div class="tblwrap"><table class="ref">
+          <thead><tr><th>model</th><th>passband |S21| error</th><th>f0 error</th><th>BW error</th></tr></thead>
+          <tbody>
+            <tr><td>prior only (Pozar coupled lines)</td><td>2.86 dB</td><td>61 MHz</td><td>114 MHz</td></tr>
+            <tr><td>prior + DeepONet, 5 seeds</td><td>0.52 dB</td><td>7.9 MHz</td><td>10.8 MHz</td></tr>
+            <tr><td>DeepONet from scratch, 5 seeds</td><td>0.32 dB</td><td>4.2 MHz</td><td>26.8 MHz</td></tr>
+          </tbody></table></div>
+        <p class="note">BW error is over the 6 single-passband test designs; most designs in the &plusmn;30 % / &plusmn;15 % box are detuned and have a split passband.</p>
+        <p class="note"><b>Mesh.</b> The training data are coarse-mesh solves (scale 1.8, order 2, about 258 k unknowns). Against a converged (medium) mesh on 10 held-out designs the coarse-trained prior + DeepONet is 0.91 dB off, and the coarse mesh itself is 1.03 dB off; the model is 0.52 dB from the coarse solver it learned from.</p>
+        <p class="note"><b>Learning curve.</b> The prior helps below about 50 training samples (10 samples: 1.8 dB with the prior, 9.5 dB from scratch). From about 100 samples the model trained from scratch is ahead (100 samples: 0.49 vs 0.62 dB).</p>
+        <p class="note"><b>Spread.</b> The 5-seed spread correlates with the error (Pearson r 0.55) but underestimates it: 23 % of the test designs have an error below two spreads. Treat the band as a lower bound.</p>
+        <p class="note">Simulated vs simulated (Palace FEM) &middot; one substrate &middot; not measured.</p>
+        <p class="note">Weights: <a href="https://huggingface.co/rfsurrogates/edge-coupled-bpf">rfsurrogates/edge-coupled-bpf</a> on Hugging Face (Apache-2.0).</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card pad" id="inputs">
+        <div class="grp">
+          <div class="row"><div class="lbl" style="margin-right:auto">Geometry (mm)</div><button class="btn" id="nominalBtn" type="button">Nominal</button></div>
+          <p class="note" id="boxNote"></p>
+          <div id="sliders"></div>
+        </div>
+        <div class="grp">
+          <div class="lbl">Substrate (fixed)</div>
+          <p class="note" id="subNote"></p>
+        </div>
+        <div class="grp">
+          <div class="readout" id="geomOut"></div>
+          <div class="msgs" id="geomMsgs" aria-live="polite"></div>
+          <p class="note" id="clearNote"></p>
+        </div>
+      </div>
+
+      <div class="card pad" id="refCard">
+        <h3>Palace-verified designs</h3>
+        <p class="note">Six designs with a Palace FEM solve on the same grid: the tuned nominal and five held-out test designs (best, median, worst by passband error, and two single-passband ones). Loading one sets the sliders and overlays the Palace curve.</p>
+        <div class="field"><label for="refSel">Load a Palace-verified design</label><select id="refSel"><option value="">&mdash;</option></select></div>
+        <div id="refInfo" hidden>
+          <div class="tblwrap"><table class="ref" id="refTbl"></table></div>
+          <p class="note" id="refNote"></p>
+        </div>
+      </div>
+
+      <div class="card pad" id="verifyCard">
+        <h3>Verify in Palace</h3>
+        <p class="note">The page cannot run the solver. These are the sample record in the form <span class="mono">samples.json</span> uses and the commands that build the mesh, solve it in Palace 0.16 (WSL, 4 MPI ranks) and collect <span class="mono">data/palace/&lt;id&gt;.npz</span>, run from the repo root. Cost: about 11 min per sample on 4 ranks, 2 GB of RAM (coarse mesh, scale 1.8, order 2, two jobs can run at once on 8 threads).</p>
+        <div class="row"><div class="lbl" style="margin-right:auto">Sample record</div><button class="btn" id="copyJson" type="button">Copy</button></div>
+        <pre class="cmd" id="jsonOut"></pre>
+        <div class="row"><div class="lbl" style="margin-right:auto">Commands</div><button class="btn" id="copyCmd" type="button">Copy</button></div>
+        <pre class="cmd" id="cmdOut"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="card pad" id="contribute" aria-label="Contribute data">
+    <h2>Contribute data</h2>
+    <p class="note">The model is trained on contributed FEM solves. Each device family has a parametric generator, a validity rule and a frequency grid, so every record is comparable. Contributors run the solver on their own machine and submit the S-parameter record through a checker that verifies the grid, the parameter box and the geometry rule. For this family one sample costs about 11 min and 2 GB at the coarse fidelity.</p>
+    <p class="note">How to run and submit a solve: <a href="https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>. Data contributions open with v0.2.</p>
+  </section>
+
+  <section class="grid2">
+    <div class="card pad">
+      <h3>Links</h3>
+      <ul class="links">
+        <li><a href="https://github.com/benjhardy/rfsurrogates">rfsurrogates on GitHub</a>: prior, dataset tools, checker, training and evaluation code, this page.</li>
+        <li><a href="https://huggingface.co/rfsurrogates/edge-coupled-bpf">Model card and weights</a>: accuracy, mesh-fidelity holdouts and limits of this model (Hugging Face).</li>
+        <li><a href="#">Write-up on LinkedIn</a>: the prior-vs-scratch result and the learning curve. <!-- TODO: LinkedIn post URL --></li>
+        <li><a href="/birdcage-builder/">Birdcage builder</a>: the other Palace front end in this lab.</li>
+        <li><a href="/agent-rf/">agent.rf</a>: the RF lab hub this page belongs to.</li>
+        <li><a href="https://awslabs.github.io/palace/stable/">Palace</a>: the open-source FEM solver behind the training data.</li>
+      </ul>
+    </div>
+    <div class="card pad">
+      <h3>References</h3>
+      <ol class="refs">
+        <li>D. M. Pozar, <i>Microwave Engineering</i>, 4th ed., Wiley (2012), sec. 8.7, coupled line filters: the N = 3 Chebyshev prototype, inverters and the coupled-line section two-port used as the prior.</li>
+        <li>M. Kirschning, R. H. Jansen, "Accurate wide-range design equations for the frequency-dependent characteristic of parallel coupled microstrip lines," <i>IEEE Trans. MTT</i> 32(1), 83&ndash;90 (1984): even/odd mode impedances and permittivities.</li>
+        <li>E. Hammerstad, &Oslash;. Jensen, "Accurate models for microstrip computer-aided design," <i>IEEE MTT-S Int. Microwave Symp. Dig.</i> (1980): single-line impedance, effective permittivity and open-end extension.</li>
+        <li>M. Kobayashi, "A dispersion formula satisfying recent requirements in microstrip CAD," <i>IEEE Trans. MTT</i> 36(8), 1246&ndash;1250 (1988).</li>
+        <li>L. Lu, P. Jin, G. Pang, Z. Zhang, G. E. Karniadakis, "Learning nonlinear operators via DeepONet based on the universal approximation theorem of operators," <i>Nature Machine Intelligence</i> 3, 218&ndash;229 (2021): the branch/trunk factorisation used for the correction.</li>
+        <li>Palace: 3D finite element solver for computational electromagnetics, AWS Labs (open source).</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer class="foot"><span>Made by Ben Hardy</span><a href="https://benjhardy.github.io/">benjhardy.github.io</a><span>MIT licence</span><span>Simulation only; nothing on this page is measured.</span></footer>
+</main>
+
+<script src="surrogate.js"></script>
+<script>
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---------- theme (same as the birdcage builder / visual calculators) ----------
+const Theme = (() => {
+  const KEY = 'vc-theme', subs = [];
+  let col = null;
+  const eff = () => { const t = document.documentElement.dataset.theme; if (t === 'light' || t === 'dark') return t; return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; };
+  function read() {
+    const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
+    col = {}; for (const n of ['bg', 'surface', 'ink', 'muted', 'line', 'grid', 'field', 'hfield', 'ok', 'bad', 'warn', 'accent']) col[n] = g('--' + n);
+    col.rgb = {}; for (const k in col) if (k !== 'rgb') col.rgb[k] = hexRgb(col[k]);
+    col.mono = g('--mono');
+  }
+  function label() { const b = $('#themeBtn'); const d = eff() === 'dark'; b.textContent = d ? 'Light' : 'Dark'; b.setAttribute('aria-label', 'Switch to ' + (d ? 'light' : 'dark') + ' theme'); }
+  function apply(t) { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; read(); label(); subs.forEach(f => f()); }
+  function init() {
+    let saved = null; try { saved = localStorage.getItem(KEY); } catch (e) {}
+    if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+    read(); label();
+    $('#themeBtn').addEventListener('click', () => { const t = eff() === 'dark' ? 'light' : 'dark'; try { localStorage.setItem(KEY, t); } catch (e) {} apply(t); });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { read(); label(); subs.forEach(f => f()); });
+  }
+  return { init, on: f => subs.push(f), get c() { if (!col) read(); return col; } };
+})();
+function hexRgb(h) { h = (h || '').trim(); if (h[0] !== '#') return [128, 128, 128]; if (h.length === 4) h = '#' + h[1] + h[1] + h[2] + h[2] + h[3] + h[3]; const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+const rgba = (c, al = 1) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${al})`;
+
+// ---------- device registry ----------
+// A device family = parameter names/units, a prior function, a weights file, a metrics function and Palace references.
+// A second family is a new entry here plus its own weights.json / palace_refs.json; the page code below only reads DEV.
+const DEVICES = {
+  'ecm-bpf-ro4350b': {
+    id: 'ecm-bpf-ro4350b',
+    name: 'Edge-coupled microstrip BPF (RO4350B)',
+    lede: 'Edge-coupled microstrip band-pass filter, 3&ndash;7 GHz, RO4350B (&epsilon;<sub>r</sub> 3.66, h 0.508 mm): an analytic coupled-line prior plus a learned correction trained on 261 Palace FEM solves. Runs in your browser. Simulation only.',
+    weights: 'weights.json', refs: 'palace_refs.json',
+    // UI parameters (the fixed substrate entries of p are shown, not edited); the box comes from weights.json
+    params: [
+      { key: 'w1', label: 'w₁', unit: 'mm', desc: 'strip width, outer sections (1, 4)' },
+      { key: 'w2', label: 'w₂', unit: 'mm', desc: 'strip width, inner sections (2, 3)' },
+      { key: 'g1', label: 'g₁', unit: 'mm', desc: 'coupling gap, outer sections' },
+      { key: 'g2', label: 'g₂', unit: 'mm', desc: 'coupling gap, inner sections' },
+      { key: 'l1', label: 'l₁', unit: 'mm', desc: 'coupled length, outer sections' },
+      { key: 'l2', label: 'l₂', unit: 'mm', desc: 'coupled length, inner sections' },
+    ],
+    fixed: [{ key: 'eps_r', label: 'εr' }, { key: 'h', label: 'h', unit: 'mm' }],
+    substrateText: 'RO4350B: εr 3.66, h 0.508 mm, tan δ 0.0037; copper as a zero-thickness PEC sheet; 50 Ω feeds of width 1.1122 mm.',
+    models: [{ id: 'prior', label: 'prior only' }, { id: 'stageB', label: 'prior + DeepONet (5-seed ensemble)' }, { id: 'scratch', label: 'DeepONet from scratch (5-seed ensemble)' }],
+    defaultModel: 'stageB',
+    prior: Surrogate.sPrior,
+    predict: Surrogate.predict, metrics: Surrogate.metrics, inverse: Surrogate.inverse,
+    clearance: Surrogate.clearance, cMin: Surrogate.C_MIN,
+    validityText: 'Validity rule: clearance > 0.05 mm, clearance = min(g₁ − max(0, (w₂ − w₁)/2), g₂ − max(0, (w₁ − w₂)/2), g₁ − max(0, (W50 − w₁)/2)). Below zero the strips fuse into one conductor in the centred-step layout; between 0 and 0.05 mm the production mesh cannot resolve the corner. The training data contain only valid geometries.',
+    trusted: Surrogate.TRUSTED,
+    plot: { fMin: 3, fMax: 7, dbMin: -60, dbMax: 0 },
+    // Palace case record and commands (from build_case.py / run_queue.sh / collect.py)
+    caseName: p => 'web-' + hashP(p),
+    record: (p, name) => JSON.stringify({ id: name, p: p.map(v => +v.toPrecision(10)), kind: 'web' }),
+    commands: (p, name) => [
+      '# in a clone of github.com/benjhardy/rfsurrogates; Palace 0.16 as run_palace, 4 MPI ranks',
+      'cd families/edge_coupled_bpf',
+      `python build_case.py --p ${p.map(v => fmtP(v)).join(' ')} --name ${name} --scale 1.8 --tol 1e-2 --sweep narrow`,
+      `(cd runs/${name} && run_palace config.json 4)`,
+      `python collect.py --run ${name} --ranks 4      # writes data/aux/${name}.npz`,
+      `python ../../contrib/check_sample.py data/aux/${name}.npz --contributor <github handle> --licence CC-BY-4.0`,
+    ].join('\n'),
+  },
+};
+function hashP(p) { let h = 2166136261; const s = p.map(v => v.toFixed(5)).join(','); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16).padStart(8, '0').slice(0, 6); }
+const fmtP = v => (Math.abs(v) >= 100 ? v.toPrecision(6) : +v.toFixed(5)).toString();
+
+// ---------- state ----------
+let DEV = null, SUR = null, REFS = null, P = null, MODE = 'stageB', PAL = null, RES = null, MET = null, HOVER = -1, CANDS = [];
+const idx = key => SUR.paramNames.indexOf(key);
+
+async function loadDevice(id) {
+  DEV = DEVICES[id];
+  $('#lede').innerHTML = DEV.lede;
+  $('#subNote').textContent = DEV.substrateText;
+  $('#clearNote').textContent = DEV.validityText;
+  const st = $('#loadStatus'); st.className = 'status'; st.textContent = 'Loading weights…';
+  $('#findBtn').disabled = true;
+  try {
+    const [w, r] = await Promise.all([fetch(DEV.weights).then(x => { if (!x.ok) throw new Error(DEV.weights + ' ' + x.status); return x.json(); }),
+                                      fetch(DEV.refs).then(x => x.ok ? x.json() : null)]);
+    SUR = Surrogate.load(w); REFS = r;
+  } catch (e) { st.className = 'status bad'; st.textContent = 'Could not load the model: ' + e.message; return; }
+  MODE = DEV.defaultModel; PAL = null;
+  P = SUR.centre.slice();
+  buildModelSeg(); buildSliders(); buildRefSel();
+  const m = SUR.meta;
+  $('#boxNote').textContent = `Sampling box: ±30 % on widths and gaps, ±15 % on lengths around the tuned nominal. ${m.n_palace_samples} Palace samples (train ${m.n_train} / val ${m.n_val} / test ${m.n_test}); commit ${m.commit}.`;
+  update();
+  st.textContent = `Weights loaded (${Object.values(SUR.ensembles).reduce((a, e) => a + e.models.length, 0)} networks, ${m.format}). Tabulating the trunks…`;
+  const ms = await SUR.prepareFastAsync((i, n) => { st.textContent = `Tabulating the trunks… ${i}/${n}`; });
+  st.className = 'status ok'; st.textContent = `Ready: ${timeQuery().toFixed(1)} ms per query (prior + 5 networks + metrics; tables built in ${(ms / 1e3).toFixed(1)} s).`;
+  $('#findBtn').disabled = false;
+  update();
+}
+function timeQuery() { const t0 = performance.now(); for (let i = 0; i < 20; i++) DEV.metrics(DEV.predict(SUR, 'stageB', P)); return (performance.now() - t0) / 20; }
+
+// ---------- inputs ----------
+function buildModelSeg() {
+  const seg = $('#modelSeg'); seg.innerHTML = '';
+  for (const m of DEV.models) { const b = document.createElement('button'); b.type = 'button'; b.dataset.v = m.id; b.textContent = m.label; b.setAttribute('aria-pressed', String(m.id === MODE)); b.addEventListener('click', () => { MODE = m.id; for (const x of seg.children) x.setAttribute('aria-pressed', String(x.dataset.v === MODE)); update(); }); seg.appendChild(b); }
+}
+function buildSliders() {
+  const host = $('#sliders'); host.innerHTML = '';
+  for (const q of DEV.params) {
+    const [lo, hi] = SUR.box[q.key], i = idx(q.key);
+    const step = +((hi - lo) / 500).toPrecision(1);
+    const d = document.createElement('div'); d.className = 'field';
+    d.innerHTML = `<label for="n_${q.key}">${q.label} <span class="u">(${q.unit}) · ${q.desc} · ${lo.toFixed(3)}–${hi.toFixed(3)}</span></label>
+      <div class="slide"><input type="range" id="r_${q.key}" min="${lo}" max="${hi}" step="${step}" aria-label="${q.key} slider"><input type="number" id="n_${q.key}" min="${lo.toFixed(4)}" max="${hi.toFixed(4)}" step="0.001"></div>`;
+    host.appendChild(d);
+    const r = $('#r_' + q.key), n = $('#n_' + q.key);
+    r.addEventListener('input', () => { P[i] = +r.value; n.value = (+r.value).toFixed(4); dropPalace(); update(); });
+    n.addEventListener('change', () => { let v = +n.value; if (!isFinite(v)) v = P[i]; v = Math.min(hi, Math.max(lo, v)); P[i] = v; n.value = v.toFixed(4); r.value = v; dropPalace(); update(); });
+  }
+  syncInputs();
+}
+function syncInputs() { for (const q of DEV.params) { const v = P[idx(q.key)]; $('#r_' + q.key).value = v; $('#n_' + q.key).value = v.toFixed(4); } }
+function setP(p, pal) { P = p.slice(); PAL = pal || null; syncInputs(); if (!pal) $('#refSel').value = ''; update(); }
+function dropPalace() { if (PAL) { PAL = null; $('#refSel').value = ''; $('#refInfo').hidden = true; } }
+$('#nominalBtn').addEventListener('click', () => setP(SUR.centre, null));
+
+function buildRefSel() {
+  const sel = $('#refSel'); sel.innerHTML = '<option value="">—</option>';
+  if (!REFS) { sel.disabled = true; return; }
+  REFS.refs.forEach((r, i) => { const o = document.createElement('option'); o.value = String(i); o.textContent = `${r.id} · ${r.role}${r.error && r.error.stageB ? ` · ${r.error.stageB.pb_db_mean.toFixed(2)} dB` : ''}`; sel.appendChild(o); });
+  sel.onchange = () => { const r = REFS.refs[+sel.value]; if (!r) { dropPalace(); update(); return; } setP(r.p, r); };
+}
+
+// ---------- compute ----------
+function update() {
+  if (!SUR) return;
+  RES = DEV.predict(SUR, MODE, P);
+  MET = DEV.metrics(RES);
+  renderGeom(); renderMetrics(); renderPlot(); renderRef(); renderVerify();
+}
+function renderGeom() {
+  const c = DEV.clearance(P), ok = c > DEV.cMin, dist = Surrogate.distanceToBoxEdge(P, SUR.box, SUR.paramNames);
+  $('#geomOut').innerHTML = `<div><span>clearance</span><b class="${ok ? '' : 'bad'}">${c.toFixed(3)} mm</b><small>rule c &gt; ${DEV.cMin} mm</small></div>
+    <div><span>distance to box edge</span><b class="${dist < 0.05 ? 'warn' : ''}">${dist.toFixed(3)}</b><small>0 = on an edge, 0.5 = centre</small></div>`;
+  const msgs = [];
+  if (!ok) msgs.push(`<div class="msg e">Invalid geometry: clearance ${c.toFixed(3)} mm. ${c <= 0 ? 'The strips fuse into one conductor; this is not a coupled-line filter.' : 'The corner is closer than the production mesh can resolve.'} No training sample has this geometry.</div>`);
+  else if (c < 0.1) msgs.push(`<div class="msg w"><b>Marginal clearance</b> (${c.toFixed(3)} mm, below 0.1 mm): about one mesh element across the corner. The tuned nominal is in this band (0.061 mm).</div>`);
+  if (dist < 0.05) msgs.push(`<div class="msg w"><b>Near the box edge.</b> Fewer training samples here; expect larger error than the held-out mean.</div>`);
+  $('#geomMsgs').innerHTML = msgs.join('');
+}
+function renderMetrics() {
+  const m = MET, bwTxt = m.split ? `<b class="warn">split</b><small>two peaks, dip &gt; 3 dB; 3 dB band ${(1e3 * m.bw).toFixed(0)} MHz is not a single passband</small>` : `<b>${(1e3 * m.bw).toFixed(0)} MHz</b><small>${m.fLo.toFixed(3)}–${m.fHi.toFixed(3)} GHz</small>`;
+  const spread = MODE === 'prior' ? '<b>—</b><small>single model</small>' : `<b>${m.spreadDb.toFixed(2)} dB</b><small>std over seeds, in band</small>`;
+  $('#metricsOut').innerHTML = `<div><span>f0 (|S21|² centroid)</span><b>${m.f0.toFixed(3)} GHz</b><small>peak at ${m.fPeak.toFixed(2)} GHz</small></div>
+    <div><span>3 dB bandwidth</span>${bwTxt}</div>
+    <div><span>insertion loss at f0</span><b>${m.il.toFixed(2)} dB</b><small>peak |S21| ${m.peakDb.toFixed(2)} dB</small></div>
+    <div><span>return loss</span><b>${isFinite(m.rl) ? m.rl.toFixed(1) + ' dB' : '—'}</b><small>${m.rlMethod}</small></div>
+    <div><span>ensemble spread</span>${spread}</div>` + (m.live ? '' : `<div><span>passband</span><b class="bad">none</b><small>peak below ${Surrogate.DEAD_DB} dB</small></div>`);
+}
+
+// ---------- plot ----------
+function fitCanvas(cv) {
+  const dpr = Math.min(2, window.devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, w, h];
+}
+let PLOT = null;
+function renderPlot() {
+  const cv = $('#plot'), [g, W, H] = fitCanvas(cv), C = Theme.c, pl = DEV.plot;
+  g.clearRect(0, 0, W, H);
+  const L = 44, R = 14, T = 14, B = 34, pw = W - L - R, ph = H - T - B;
+  const X = f => L + (f - pl.fMin) / (pl.fMax - pl.fMin) * pw, Y = d => T + (pl.dbMax - Math.max(pl.dbMin, Math.min(pl.dbMax, d))) / (pl.dbMax - pl.dbMin) * ph;
+  PLOT = { X, Y, L, T, pw, ph };
+  g.font = `11px ${C.mono}`; g.fillStyle = C.muted; g.lineWidth = 1;
+  g.textAlign = 'center';
+  for (let f = pl.fMin; f <= pl.fMax + 1e-9; f += 0.5) { const x = X(f); g.strokeStyle = C.grid; g.beginPath(); g.moveTo(x, T); g.lineTo(x, T + ph); g.stroke(); if (Math.abs(f - Math.round(f)) < 1e-9) g.fillText(f.toFixed(0), x, T + ph + 14); }
+  g.textAlign = 'right';
+  for (let d = pl.dbMax; d >= pl.dbMin - 1e-9; d -= 10) { const y = Y(d); g.strokeStyle = C.grid; g.beginPath(); g.moveTo(L, y); g.lineTo(L + pw, y); g.stroke(); g.fillText(d.toFixed(0), L - 6, y + 4); }
+  g.textAlign = 'center'; g.fillText('frequency (GHz)', L + pw / 2, H - 4);
+  g.save(); g.translate(12, T + ph / 2); g.rotate(-Math.PI / 2); g.fillText('dB', 0, 0); g.restore();
+  g.strokeStyle = C.line; g.beginPath(); g.moveTo(L, T); g.lineTo(L, T + ph); g.lineTo(L + pw, T + ph); g.stroke();
+  if (!RES) return;
+  const f = RES.f, n = f.length;
+  // 3 dB band and f0
+  if (MET && MET.live && !MET.split) { g.fillStyle = rgba(C.rgb.ink, 0.05); g.fillRect(X(MET.fLo), T, X(MET.fHi) - X(MET.fLo), ph); }
+  if (MET) { g.strokeStyle = C.ink; g.setLineDash([5, 4]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(MET.f0), T); g.lineTo(X(MET.f0), T + ph); g.stroke(); g.setLineDash([]); }
+  const band = (mean, std, col) => { if (MODE === 'prior') return; g.fillStyle = rgba(col, 0.22); g.beginPath(); for (let i = 0; i < n; i++) { const x = X(f[i]), y = Y(mean[i] + std[i]); i ? g.lineTo(x, y) : g.moveTo(x, y); } for (let i = n - 1; i >= 0; i--) g.lineTo(X(f[i]), Y(mean[i] - std[i])); g.closePath(); g.fill(); };
+  const line = (arr, col, w, dash) => { g.strokeStyle = col; g.lineWidth = w; g.setLineDash(dash || []); g.beginPath(); for (let i = 0; i < n; i++) { const x = X(f[i]), y = Y(arr[i]); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.setLineDash([]); };
+  g.save(); g.beginPath(); g.rect(L, T, pw, ph); g.clip();
+  band(RES.s11db, RES.std11, C.rgb.hfield); band(RES.s21db, RES.std21, C.rgb.field);
+  if (MODE !== 'prior') { line(RES.prior.s11db, C.muted, 1.2, [4, 4]); line(RES.prior.s21db, C.muted, 1.2, [4, 4]); }
+  if (PAL) { line(PAL.s11_dB, C.ok, 1.6); line(PAL.s21_dB, C.ok, 1.6); }
+  line(RES.s11db, C.hfield, 2.2); line(RES.s21db, C.field, 2.4);
+  g.restore();
+  if (HOVER >= 0) { const x = X(f[HOVER]); g.strokeStyle = C.muted; g.lineWidth = 1; g.beginPath(); g.moveTo(x, T); g.lineTo(x, T + ph); g.stroke(); }
+  // legend
+  const L2 = [`<span><i style="color:${C.field}"></i>|S21| ${MODE === 'prior' ? 'prior' : 'ensemble mean'}</span>`, `<span><i style="color:${C.hfield}"></i>|S11|</span>`];
+  if (MODE !== 'prior') { L2.push(`<span><i class="band" style="background:${C.field}"></i>±1 std over seeds</span>`, `<span><i class="dash" style="color:${C.muted}"></i>prior</span>`); }
+  if (PAL) L2.push(`<span><i style="color:${C.ok}"></i>Palace (${esc(PAL.id)})</span>`);
+  L2.push(`<span><i class="dash" style="color:${C.ink}"></i>f0</span>`);
+  $('#plotLeg').innerHTML = L2.join('');
+}
+function bindPlotHover() {
+  const cv = $('#plot'), tip = $('#plotTip');
+  const hide = () => { tip.hidden = true; if (HOVER >= 0) { HOVER = -1; renderPlot(); } };
+  cv.addEventListener('mouseleave', hide);
+  cv.addEventListener('pointermove', e => {
+    if (!RES || !PLOT) return;
+    const b = cv.getBoundingClientRect(), mx = e.clientX - b.left, my = e.clientY - b.top;
+    if (mx < PLOT.L || mx > PLOT.L + PLOT.pw) return hide();
+    const f = RES.f, fr = DEV.plot.fMin + (mx - PLOT.L) / PLOT.pw * (DEV.plot.fMax - DEV.plot.fMin);
+    let k = 0; for (let i = 1; i < f.length; i++) if (Math.abs(f[i] - fr) < Math.abs(f[k] - fr)) k = i;
+    if (k !== HOVER) { HOVER = k; renderPlot(); }
+    let h = `<b>${f[k].toFixed(2)} GHz</b><br>|S21| ${RES.s21db[k].toFixed(2)} dB${MODE !== 'prior' ? ` ± ${RES.std21[k].toFixed(2)}` : ''}<br>|S11| ${RES.s11db[k].toFixed(2)} dB${MODE !== 'prior' ? ` ± ${RES.std11[k].toFixed(2)}` : ''}`;
+    if (MODE !== 'prior') h += `<br>prior ${RES.prior.s21db[k].toFixed(2)} / ${RES.prior.s11db[k].toFixed(2)} dB`;
+    if (PAL) h += `<br>Palace ${PAL.s21_dB[k].toFixed(2)} / ${PAL.s11_dB[k].toFixed(2)} dB`;
+    tip.innerHTML = h; tip.hidden = false;
+    const tw = tip.offsetWidth, left = mx + 14 + tw > b.width ? mx - tw - 10 : mx + 14;
+    tip.style.left = left + 'px'; tip.style.top = Math.max(4, Math.min(my - 10, b.height - tip.offsetHeight - 4)) + 'px';
+  });
+}
+
+// ---------- Palace reference ----------
+function renderRef() {
+  const box = $('#refInfo');
+  if (!PAL) { box.hidden = true; return; }
+  box.hidden = false;
+  const r = PAL, e = r.error || {}, lab = { prior_only: 'prior only', stageB: 'prior + DeepONet', scratch: 'DeepONet from scratch' };
+  let h = '<thead><tr><th>held-out error</th><th>passband |S21| mean / max</th><th>f0</th><th>BW</th></tr></thead><tbody>';
+  for (const k of ['prior_only', 'stageB', 'scratch']) if (e[k]) h += `<tr${(k === MODE || (k === 'prior_only' && MODE === 'prior')) ? ' class="hl"' : ''}><td>${lab[k]}</td><td>${e[k].pb_db_mean.toFixed(2)} / ${e[k].pb_db_max.toFixed(2)} dB</td><td>${e[k].f0_err_MHz >= 0 ? '+' : ''}${e[k].f0_err_MHz.toFixed(1)} MHz</td><td>${e[k].bw_err_MHz >= 0 ? '+' : ''}${e[k].bw_err_MHz.toFixed(0)} MHz</td></tr>`;
+  // live error of the curve on screen against this Palace curve (same definition as eval.py)
+  const pk = Math.max(...r.s21_dB), f = RES.f; let s = 0, c = 0, mx = 0;
+  for (let i = 0; i < f.length; i++) if (r.s21_dB[i] >= pk - 3) { const d = Math.abs(RES.s21db[i] - r.s21_dB[i]); s += d; c++; mx = Math.max(mx, d); }
+  const f0err = 1e3 * (MET.f0 - r.palace.f0_centroid_GHz);
+  h += `<tr><td>this page, ${esc(DEV.models.find(m => m.id === MODE).label)}</td><td>${(s / c).toFixed(2)} / ${mx.toFixed(2)} dB</td><td>${f0err >= 0 ? '+' : ''}${f0err.toFixed(1)} MHz</td><td>${r.palace.split_passband ? 'split' : ((MET.bw - r.palace.bw3dB_GHz) * 1e3 >= 0 ? '+' : '') + ((MET.bw - r.palace.bw3dB_GHz) * 1e3).toFixed(0) + ' MHz'}</td></tr></tbody>`;
+  $('#refTbl').innerHTML = h;
+  $('#refNote').innerHTML = `${esc(r.id)}: ${esc(r.role)}. Palace f0 ${r.palace.f0_centroid_GHz.toFixed(3)} GHz, 3 dB BW ${(1e3 * r.palace.bw3dB_GHz).toFixed(0)} MHz${r.palace.split_passband ? ' (split passband)' : ''}, peak |S21| ${r.palace.peak_S21_dB.toFixed(2)} dB, clearance ${r.clearance_mm.toFixed(3)} mm${r.palace.wall_s ? `, solve ${(r.palace.wall_s / 60).toFixed(1)} min` : ''}${r.dist_to_edge != null ? `, distance to box edge ${r.dist_to_edge.toFixed(3)}` : ''}. The held-out rows are from the evaluation run (ensemble mean on the stored test predictions); the last row is recomputed here from the curve on screen.`;
+}
+
+// ---------- verify in Palace ----------
+function renderVerify() {
+  const name = DEV.caseName(P);
+  $('#jsonOut').textContent = DEV.record(P, name);
+  $('#cmdOut').textContent = DEV.commands(P, name);
+}
+async function copyText(t, btn) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (e2) {} ta.remove();
+  }
+  const old = btn.textContent; btn.textContent = ok ? 'Copied' : 'Copy failed'; setTimeout(() => { btn.textContent = old; }, 1400);
+}
+$('#copyJson').addEventListener('click', e => copyText($('#jsonOut').textContent, e.currentTarget));
+$('#copyCmd').addEventListener('click', e => copyText($('#cmdOut').textContent, e.currentTarget));
+
+// ---------- inverse design ----------
+function readSpec() {
+  const spec = { f0: +$('#specF0').value, bw: +$('#specBW').value, rl: +$('#specRL').value, rejections: [] };
+  const txt = $('#specRej').value.trim();
+  if (txt) for (const tok of txt.split(/[,;\s]+/)) { const m = tok.match(/^([\d.]+)\s*:\s*([\d.]+)$/); if (m) spec.rejections.push({ f: +m[1], db: +m[2] }); else spec.bad = tok; }
+  return spec;
+}
+function specMessages(spec) {
+  const T = DEV.trusted, out = [];
+  if (!(spec.f0 > 0) || !(spec.bw > 0)) out.push('<div class="msg e">f0 and BW must be positive.</div>');
+  if (spec.bad) out.push(`<div class="msg e">Could not read rejection "${esc(spec.bad)}"; use f:dB, for example 6.4:30.</div>`);
+  const w = [];
+  if (spec.f0 < T.f0[0] || spec.f0 > T.f0[1]) w.push(`f0 outside ${T.f0[0]}–${T.f0[1]} GHz`);
+  if (spec.bw < T.bw[0] || spec.bw > T.bw[1]) w.push(`BW outside ${T.bw[0]}–${T.bw[1]} GHz`);
+  if (spec.rl > T.rlMax) w.push(`return loss above ${T.rlMax} dB`);
+  if (w.length) out.push(`<div class="msg w"><b>Outside the training data:</b> ${w.join('; ')}. The model is not trusted there; the search still runs, but the result needs a Palace check.</div>`);
+  return out.join('');
+}
+for (const id of ['specF0', 'specBW', 'specRL', 'specRej']) $('#' + id).addEventListener('input', () => { $('#specMsgs').innerHTML = specMessages(readSpec()); });
+$('#findBtn').addEventListener('click', () => {
+  const spec = readSpec(); $('#specMsgs').innerHTML = specMessages(spec);
+  if (!(spec.f0 > 0) || !(spec.bw > 0) || spec.bad) return;
+  const st = $('#findStatus'), btn = $('#findBtn');
+  btn.disabled = true; st.className = 'status'; st.textContent = 'Searching…';
+  setTimeout(() => {
+    try {
+      const inv = DEV.inverse(SUR, MODE, spec);
+      CANDS = inv.candidates;
+      st.textContent = `${inv.nStarts} starts, ${inv.nValidStarts} valid, ${inv.nRefined} refined, ${inv.nEval} model evaluations in ${(inv.ms / 1e3).toFixed(1)} s (${DEV.models.find(m => m.id === MODE).label}).`;
+      renderCands();
+    } catch (e) { st.className = 'status bad'; st.textContent = 'Search failed: ' + e.message; }
+    btn.disabled = false;
+  }, 30);
+});
+function renderCands() {
+  const t = $('#candTbl'), note = $('#candNote');
+  if (!CANDS.length) { t.hidden = true; note.hidden = true; return; }
+  let h = `<thead><tr><th>#</th>${DEV.params.map(q => `<th>${q.label}</th>`).join('')}<th>f0 GHz</th><th>BW MHz</th><th>RL dB</th><th>spread dB</th><th>objective</th></tr></thead><tbody>`;
+  CANDS.forEach((c, i) => { h += `<tr class="pick" data-i="${i}" tabindex="0"><td>${i + 1}</td>${DEV.params.map(q => `<td>${c.p[idx(q.key)].toFixed(4)}</td>`).join('')}<td>${c.m.f0.toFixed(3)}</td><td>${c.m.split ? 'split' : (1e3 * c.m.bw).toFixed(0)}</td><td>${isFinite(c.m.rl) ? c.m.rl.toFixed(1) : '—'}</td><td>${MODE === 'prior' ? '—' : c.m.spreadDb.toFixed(2)}</td><td>${c.J.toFixed(3)}</td></tr>`; });
+  t.innerHTML = h + '</tbody>'; t.hidden = false; note.hidden = false;
+  for (const tr of t.querySelectorAll('tr.pick')) { const go = () => setP(CANDS[+tr.dataset.i].p, null); tr.addEventListener('click', go); tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); }
+}
+
+// ---------- boot ----------
+Theme.init(); Theme.on(renderPlot);
+bindPlotHover();
+window.addEventListener('resize', renderPlot);
+const devSel = $('#device');
+for (const id in DEVICES) { const o = document.createElement('option'); o.value = id; o.textContent = DEVICES[id].name; devSel.appendChild(o); }
+devSel.addEventListener('change', () => loadDevice(devSel.value));
+loadDevice(devSel.value);
+</script>
+</body>
+</html>

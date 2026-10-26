@@ -1,0 +1,1 @@
+--scale 1.8 --tol 1e-2 --sweep narrow

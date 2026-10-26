@@ -1,0 +1,33 @@
+{
+ "schema": "rfsurrogates.families/1",
+ "note": "One object per device family. The box, the centre and the design list are in the family's samples.json; the functions (validity rule, prior, metrics) are in the family's family.py. registry.py reads this file.",
+ "families": [
+  {
+   "family_id": "edge_coupled_bpf",
+   "status": "trained",
+   "description": "edge-coupled (parallel-coupled) microstrip band-pass filter, Chebyshev N = 3 (0.5 dB ripple), 4 coupled-line sections",
+   "dir": "families/edge_coupled_bpf",
+   "module": "family.py",
+   "param_names": ["w1", "w2", "g1", "g2", "l1", "l2", "eps_r", "h"],
+   "units": {"w1": "mm", "w2": "mm", "g1": "mm", "g2": "mm", "l1": "mm", "l2": "mm", "eps_r": "1", "h": "mm"},
+   "substrate": {"name": "RO4350B", "eps_r": 3.66, "h_mm": 0.508, "tand": 0.0037, "copper": "PEC sheet"},
+   "f_grid_GHz": [3.0, 7.0, 0.02],
+   "ports": {"n": 2, "z0_ohm": 50.0, "reference": "start of the coupled section (3 mm feed de-embedded)",
+             "symmetric": true, "reciprocal": true},
+   "stored_s": ["S11", "S21"],
+   "validity": "clearance(p) > 0.05 mm",
+   "prior_model": "Pozar coupled-line synthesis, Kirschning-Jansen coupled microstrip, Hammerstad open ends, Kobayashi dispersion",
+   "reference_solver": "palace 0.16",
+   "fidelity_tags": {
+    "coarse": "Palace 0.16, mesh scale 1.8, order 2, AdaptiveTol 1e-2 (production)",
+    "medium": "Palace 0.16, mesh scale 1.4, order 2 (holdout)",
+    "fine": "Palace 0.16, mesh scale 1.0, order 2 (reference, nominal only)",
+    "other": "any other solver or setup; mesh statistics and port definition required"
+   },
+   "production_fidelity": "coarse",
+   "holdout_fidelity": "medium",
+   "hf_model": "rfsurrogates/edge-coupled-bpf",
+   "hf_dataset_path": "rfsurrogates/samples:edge_coupled_bpf"
+  }
+ ]
+}

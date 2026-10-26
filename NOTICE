@@ -1,0 +1,6 @@
+rfsurrogates
+Copyright 2026 Benjamin Hardy
+
+Code and model weights: Apache License 2.0 (LICENSE).
+Simulation records and data index (data_index/, the Hugging Face dataset rfsurrogates/samples): Creative Commons
+Attribution 4.0 International (DATA_LICENSE). Each record names its contributor.
