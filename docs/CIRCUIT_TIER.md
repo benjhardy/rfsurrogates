@@ -2,7 +2,7 @@
 
 Status: draft. First working version, for `edge_coupled_bpf` only. Simulation only. Every number below comes from
 `families/edge_coupled_bpf/results/circuit_tier.json` or `families/edge_coupled_bpf/results/circuit_data_physical_n500.json`
-(written by `families/edge_coupled_bpf/circuit_eval.py` and `tools/make_circuit_data.py`).
+(written by `families/edge_coupled_bpf/experiments/circuit_eval.py` and `tools/make_circuit_data.py`).
 
 ## Three tiers
 
@@ -138,7 +138,7 @@ circuit set with the stage-B split fixed. It is not done.
 
 **(ii) Input space mapping.** Learn p_c = P(p_f) from a few Palace solves so that the circuit with input p_c lines up
 with Palace at p_f. The f0 error is a bias of the same sign on every design, so a simple map (for example one scale
-factor on l1, l2 and a shift on g1, g2) can remove most of it. `tune.py` already did this once, for the nominal only,
+factor on l1, l2 and a shift on g1, g2) can remove most of it. `experiments/tune.py` already did this once, for the nominal only,
 with the prior as the coarse model. A circuit solve costs less than a second, so an aligned circuit can be called inside a
 design loop. Not done.
 

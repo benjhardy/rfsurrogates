@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Palace queue for one family folder. Run in Linux (or in ONE foreground WSL call per batch on Windows):
-#     bash families/edge_coupled_bpf/run_queue.sh [queue file]
-# Queue file (default queue.txt next to this script): one job per line, "<run name> [ranks]";
+#     bash families/edge_coupled_bpf/experiments/run_queue.sh [queue file]
+# Queue file (default queue.txt in the family folder): one job per line, "<run name> [ranks]";
 # "par: a 4, b 4" runs the jobs concurrently. The queue file is re-read before every job, so lines can be appended
-# while it runs. Stops at the next job boundary when a STOP file exists next to this script. Finished runs
+# while it runs. Stops at the next job boundary when a STOP file exists in the family folder. Finished runs
 # (output/port-S.csv + Elapsed in time.log) are skipped. After each run, collect.py writes data/palace/<id>.npz.
 # Environment: RFS_PYTHON (python with gmsh, numpy, scipy, palace-agent-tools; default python3),
 #              RUN_PALACE (command that takes "config.json <ranks>"; default run_palace, e.g. a wrapper around
 #              `mpirun -np <ranks> palace config.json` or the Palace Apptainer image).
-ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)   # the family folder
 PY=${RFS_PYTHON:-python3}
 RUN_PALACE=${RUN_PALACE:-run_palace}
 QUEUE=${1:-$ROOT/queue.txt}
