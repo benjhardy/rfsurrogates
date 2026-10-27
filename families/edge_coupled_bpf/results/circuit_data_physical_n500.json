@@ -1,0 +1,96 @@
+{
+ "family": "edge_coupled_bpf",
+ "mode": "physical",
+ "n_requested": 500,
+ "n_ok": 500,
+ "n_failed": 0,
+ "wall_s_total": 289.4,
+ "s_per_design": 0.5787,
+ "designs_per_hour": 6220,
+ "batch": 50,
+ "out": "C:\\Users\\ben\\jobs\\rfsurrogates\\families\\edge_coupled_bpf\\data\\circuit\\circuit_physical_n500.npz",
+ "host_at_start": {
+  "backend": "wsl",
+  "distro": null,
+  "cpus": 8,
+  "load_1m": 8.71,
+  "load_5m": 7.81,
+  "load_15m": 7.71,
+  "ram_total_gb": 25.44,
+  "ram_available_gb": 22.34,
+  "heavy_em_processes": 9
+ },
+ "batches": [
+  {
+   "first": 0,
+   "n": 50,
+   "s_per_design": 0.6414,
+   "load_1m": 8.71,
+   "heavy_em_processes": 9
+  },
+  {
+   "first": 50,
+   "n": 50,
+   "s_per_design": 0.6279,
+   "load_1m": 8.95,
+   "heavy_em_processes": 9
+  },
+  {
+   "first": 100,
+   "n": 50,
+   "s_per_design": 0.6908,
+   "load_1m": 8.97,
+   "heavy_em_processes": 9
+  },
+  {
+   "first": 150,
+   "n": 50,
+   "s_per_design": 0.2409,
+   "load_1m": 8.98,
+   "heavy_em_processes": 0
+  },
+  {
+   "first": 200,
+   "n": 50,
+   "s_per_design": 0.2313,
+   "load_1m": 7.21,
+   "heavy_em_processes": 0
+  },
+  {
+   "first": 250,
+   "n": 50,
+   "s_per_design": 0.6019,
+   "load_1m": 6.26,
+   "heavy_em_processes": 0
+  },
+  {
+   "first": 300,
+   "n": 50,
+   "s_per_design": 0.7024,
+   "load_1m": 6.92,
+   "heavy_em_processes": 9
+  },
+  {
+   "first": 350,
+   "n": 50,
+   "s_per_design": 0.6537,
+   "load_1m": 7.84,
+   "heavy_em_processes": 9
+  },
+  {
+   "first": 400,
+   "n": 50,
+   "s_per_design": 0.6546,
+   "load_1m": 8.4,
+   "heavy_em_processes": 9
+  },
+  {
+   "first": 450,
+   "n": 50,
+   "s_per_design": 0.6527,
+   "load_1m": 8.59,
+   "heavy_em_processes": 9
+  }
+ ],
+ "note": "file moved from data/ to data/circuit/ after the run (the tool now writes there)"
+}

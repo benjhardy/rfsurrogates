@@ -1,0 +1,594 @@
+{
+ "schema": "rfsurrogates.circuit_tier/1",
+ "family_id": "edge_coupled_bpf",
+ "note": "circuit tier vs Palace; metrics as core/eval.py (passband = within 3 dB of the Palace |S21| peak; f0 = |S21|^2 centroid over 3-7 GHz; dead filters excluded); simulation only",
+ "circuit": {
+  "simulator": "qucsator_rf 1.0.7 via circuit-agent-tools",
+  "physical": "MCOUPLED Kirschning-Jansen (Model and DispModel), MOPEN Kirschning-Jansen-Koster (MSModel Hammerstad, MSDispModel Kirschning), MSTEP wide side first",
+  "sblock": "4-port Touchstone per coupled section from the prior's physics (length l), same MOPEN and MSTEP",
+  "copper": "PEC (sigma 1e30 S/m, t = 0)",
+  "ports": "50 ohm at x = 0 and x = 2 l1 + 2 l2"
+ },
+ "groups": {
+  "test_26": {
+   "n": 26,
+   "methods": {
+    "prior": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 20,
+     "passband_S21_dB_mean": 2.8635550003785353,
+     "passband_S21_dB_max": 13.9722318649292,
+     "passband_S21_dB_p90_of_sample_means": 4.274403810501099,
+     "f0_err_MHz_mean_abs": 61.03147702579382,
+     "f0_err_MHz_max_abs": 112.99810382136587,
+     "f0_err_pct_mean_abs": 1.2221629711888222,
+     "bw_err_MHz_mean_abs": 113.79242312304545,
+     "bw_err_pct_mean_abs": 20.92469557425328,
+     "S11_lin_mean_abs": 0.049985124299732536,
+     "S11_dB_mean_abs_where_above_m20dB": 0.8023474789582766,
+     "n": 26,
+     "f0_err_MHz_mean_signed": 61.03147702579382
+    },
+    "circuit_physical": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 20,
+     "passband_S21_dB_mean": 3.0001521156384396,
+     "passband_S21_dB_max": 13.37639331817627,
+     "passband_S21_dB_p90_of_sample_means": 4.331065893173218,
+     "f0_err_MHz_mean_abs": 79.69372610290915,
+     "f0_err_MHz_max_abs": 136.03577807777523,
+     "f0_err_pct_mean_abs": 1.5902213858486616,
+     "bw_err_MHz_mean_abs": 94.77968472072571,
+     "bw_err_pct_mean_abs": 16.87988684256459,
+     "S11_lin_mean_abs": 0.05588386365427421,
+     "S11_dB_mean_abs_where_above_m20dB": 0.8925025703815314,
+     "n": 26,
+     "f0_err_MHz_mean_signed": 79.69372610290915
+    },
+    "circuit_sblock": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 20,
+     "passband_S21_dB_mean": 2.6272163712061367,
+     "passband_S21_dB_max": 13.25454044342041,
+     "passband_S21_dB_p90_of_sample_means": 3.9302700757980347,
+     "f0_err_MHz_mean_abs": 62.554504945572475,
+     "f0_err_MHz_max_abs": 113.63414062037336,
+     "f0_err_pct_mean_abs": 1.2501211815272648,
+     "bw_err_MHz_mean_abs": 105.91249696032207,
+     "bw_err_pct_mean_abs": 19.283219224722366,
+     "S11_lin_mean_abs": 0.04941612489234943,
+     "S11_dB_mean_abs_where_above_m20dB": 0.8000294944414725,
+     "n": 26,
+     "f0_err_MHz_mean_signed": 62.554504945572475
+    },
+    "network_stageB": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 20,
+     "passband_S21_dB_mean": 0.5193747253372119,
+     "passband_S21_dB_max": 3.9736313819885254,
+     "passband_S21_dB_p90_of_sample_means": 0.9347967803478241,
+     "f0_err_MHz_mean_abs": 7.910183636512764,
+     "f0_err_MHz_max_abs": 34.00748595078085,
+     "f0_err_pct_mean_abs": 0.15530915048652424,
+     "bw_err_MHz_mean_abs": 10.809637388763468,
+     "bw_err_pct_mean_abs": 2.7608822468108425,
+     "S11_lin_mean_abs": 0.011312654976231547,
+     "S11_dB_mean_abs_where_above_m20dB": 0.18144270233236826,
+     "n": 26,
+     "f0_err_MHz_mean_signed": -0.65796372502212
+    }
+   },
+   "correlation": {
+    "circuit_physical": {
+     "cos_residual_circuit_vs_prior": 0.9743201732635498,
+     "cos_residual_circuit_vs_prior_S21": 0.9747955799102783,
+     "cos_correction_circuit_vs_palace": -0.32100412249565125,
+     "explained_fraction_of_prior_residual": -0.24006855487823486,
+     "pearson_f0_err_circuit_vs_prior": 0.975864168692718,
+     "per_sample_cos_residual_median": 0.9752885699272156,
+     "cos_correction_circuit_vs_network": -0.3277234733104706,
+     "cos_correction_network_vs_palace": 0.9877828359603882
+    },
+    "circuit_sblock": {
+     "cos_residual_circuit_vs_prior": 0.9975704550743103,
+     "cos_residual_circuit_vs_prior_S21": 0.9975656867027283,
+     "cos_correction_circuit_vs_palace": 0.3349899351596832,
+     "explained_fraction_of_prior_residual": 0.043222904205322266,
+     "pearson_f0_err_circuit_vs_prior": 0.985382525404489,
+     "per_sample_cos_residual_median": 0.9979015588760376,
+     "cos_correction_circuit_vs_network": 0.33745819330215454,
+     "cos_correction_network_vs_palace": 0.9877828359603882
+    }
+   }
+  },
+  "train_all_261": {
+   "n": 261,
+   "methods": {
+    "prior": {
+     "n_dead_excluded": 1,
+     "n_split_passband": 176,
+     "passband_S21_dB_mean": 2.615060120820999,
+     "passband_S21_dB_max": 14.860696792602539,
+     "passband_S21_dB_p90_of_sample_means": 4.002000403404236,
+     "f0_err_MHz_mean_abs": 62.37810443624072,
+     "f0_err_MHz_max_abs": 136.6532857000866,
+     "f0_err_pct_mean_abs": 1.238758089122729,
+     "bw_err_MHz_mean_abs": 136.22495574515068,
+     "bw_err_pct_mean_abs": 23.558407139014783,
+     "S11_lin_mean_abs": 0.054564105282322715,
+     "S11_dB_mean_abs_where_above_m20dB": 0.9103695479723123,
+     "n": 260,
+     "f0_err_MHz_mean_signed": 62.37810443624072
+    },
+    "circuit_physical": {
+     "n_dead_excluded": 1,
+     "n_split_passband": 176,
+     "passband_S21_dB_mean": 2.75422465296892,
+     "passband_S21_dB_max": 14.543380737304688,
+     "passband_S21_dB_p90_of_sample_means": 4.234766578674316,
+     "f0_err_MHz_mean_abs": 80.97129693700022,
+     "f0_err_MHz_max_abs": 158.1562411441144,
+     "f0_err_pct_mean_abs": 1.60353951817369,
+     "bw_err_MHz_mean_abs": 133.94333522671303,
+     "bw_err_pct_mean_abs": 22.519954161066853,
+     "S11_lin_mean_abs": 0.0611138327835271,
+     "S11_dB_mean_abs_where_above_m20dB": 1.0121427942927068,
+     "n": 260,
+     "f0_err_MHz_mean_signed": 80.97129693700022
+    },
+    "circuit_sblock": {
+     "n_dead_excluded": 1,
+     "n_split_passband": 176,
+     "passband_S21_dB_mean": 2.4010336105640118,
+     "passband_S21_dB_max": 13.818778991699219,
+     "passband_S21_dB_p90_of_sample_means": 3.637843585014343,
+     "f0_err_MHz_mean_abs": 63.2036738417853,
+     "f0_err_MHz_max_abs": 135.63279583504695,
+     "f0_err_pct_mean_abs": 1.2540538400253385,
+     "bw_err_MHz_mean_abs": 132.63796634103133,
+     "bw_err_pct_mean_abs": 22.69903774048793,
+     "S11_lin_mean_abs": 0.053971013978410226,
+     "S11_dB_mean_abs_where_above_m20dB": 0.9073726636859086,
+     "n": 260,
+     "f0_err_MHz_mean_signed": 63.2036738417853
+    }
+   },
+   "correlation": {
+    "circuit_physical": {
+     "cos_residual_circuit_vs_prior": 0.9744503498077393,
+     "cos_residual_circuit_vs_prior_S21": 0.9762112498283386,
+     "cos_correction_circuit_vs_palace": -0.333376944065094,
+     "explained_fraction_of_prior_residual": -0.24831032752990723,
+     "pearson_f0_err_circuit_vs_prior": 0.9692559923159902,
+     "per_sample_cos_residual_median": 0.9750917553901672
+    },
+    "circuit_sblock": {
+     "cos_residual_circuit_vs_prior": 0.9972135424613953,
+     "cos_residual_circuit_vs_prior_S21": 0.9973546862602234,
+     "cos_correction_circuit_vs_palace": 0.30995962023735046,
+     "explained_fraction_of_prior_residual": 0.041694819927215576,
+     "pearson_f0_err_circuit_vs_prior": 0.9867527442605862,
+     "per_sample_cos_residual_median": 0.9976015388965607
+    }
+   }
+  },
+  "holdout_medium_10": {
+   "n": 10,
+   "methods": {
+    "prior": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 8,
+     "passband_S21_dB_mean": 1.2486033141613007,
+     "passband_S21_dB_max": 5.040371894836426,
+     "passband_S21_dB_p90_of_sample_means": 1.6193166851997374,
+     "f0_err_MHz_mean_abs": 17.853789835133416,
+     "f0_err_MHz_max_abs": 33.77208047341451,
+     "f0_err_pct_mean_abs": 0.34152970749264266,
+     "bw_err_MHz_mean_abs": 8.892659706909,
+     "bw_err_pct_mean_abs": 1.6604235174995519,
+     "S11_lin_mean_abs": 0.03160184398293495,
+     "S11_dB_mean_abs_where_above_m20dB": 0.5224327683448792,
+     "n": 10,
+     "f0_err_MHz_mean_signed": 17.853789835133416
+    },
+    "circuit_physical": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 8,
+     "passband_S21_dB_mean": 1.525006264448166,
+     "passband_S21_dB_max": 6.047606468200684,
+     "passband_S21_dB_p90_of_sample_means": 2.006242966651916,
+     "f0_err_MHz_mean_abs": 38.32293517727825,
+     "f0_err_MHz_max_abs": 53.29295981036175,
+     "f0_err_pct_mean_abs": 0.7323000505393206,
+     "bw_err_MHz_mean_abs": 30.840723606821996,
+     "bw_err_pct_mean_abs": 5.660769864590023,
+     "S11_lin_mean_abs": 0.03908975757658482,
+     "S11_dB_mean_abs_where_above_m20dB": 0.648396435379982,
+     "n": 10,
+     "f0_err_MHz_mean_signed": 38.32293517727825
+    },
+    "circuit_sblock": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 8,
+     "passband_S21_dB_mean": 1.1081388294696808,
+     "passband_S21_dB_max": 3.9051733016967773,
+     "passband_S21_dB_p90_of_sample_means": 1.4528244853019714,
+     "f0_err_MHz_mean_abs": 19.472713212920656,
+     "f0_err_MHz_max_abs": 32.43033369737525,
+     "f0_err_pct_mean_abs": 0.3725461715520188,
+     "bw_err_MHz_mean_abs": 4.243510490880453,
+     "bw_err_pct_mean_abs": 0.7622909441085348,
+     "S11_lin_mean_abs": 0.03008288610726595,
+     "S11_dB_mean_abs_where_above_m20dB": 0.4988565444946289,
+     "n": 10,
+     "f0_err_MHz_mean_signed": 19.472713212920656
+    }
+   },
+   "correlation": {
+    "circuit_physical": {
+     "cos_residual_circuit_vs_prior": 0.9317891001701355,
+     "cos_residual_circuit_vs_prior_S21": 0.9387288093566895,
+     "cos_correction_circuit_vs_palace": -0.4097081124782562,
+     "explained_fraction_of_prior_residual": -0.6921005249023438,
+     "pearson_f0_err_circuit_vs_prior": 0.8275021241260347,
+     "per_sample_cos_residual_median": 0.9320051074028015
+    },
+    "circuit_sblock": {
+     "cos_residual_circuit_vs_prior": 0.99150550365448,
+     "cos_residual_circuit_vs_prior_S21": 0.9921879768371582,
+     "cos_correction_circuit_vs_palace": 0.5411979556083679,
+     "explained_fraction_of_prior_residual": 0.13501346111297607,
+     "pearson_f0_err_circuit_vs_prior": 0.8696155429651583,
+     "per_sample_cos_residual_median": 0.9916645586490631
+    }
+   }
+  },
+  "holdout_coarse_twins_10": {
+   "n": 10,
+   "methods": {
+    "prior": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 8,
+     "passband_S21_dB_mean": 2.8649786472320558,
+     "passband_S21_dB_max": 10.113433837890625,
+     "passband_S21_dB_p90_of_sample_means": 3.5574351310729977,
+     "f0_err_MHz_mean_abs": 52.46806775218174,
+     "f0_err_MHz_max_abs": 88.56007502448726,
+     "f0_err_pct_mean_abs": 1.0118637870816696,
+     "bw_err_MHz_mean_abs": 30.895048420354954,
+     "bw_err_pct_mean_abs": 5.474777990314833,
+     "S11_lin_mean_abs": 0.05103280395269394,
+     "S11_dB_mean_abs_where_above_m20dB": 0.8209930241107941,
+     "n": 10,
+     "f0_err_MHz_mean_signed": 52.46806775218174
+    },
+    "circuit_physical": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 8,
+     "passband_S21_dB_mean": 3.061493766307831,
+     "passband_S21_dB_max": 9.85728645324707,
+     "passband_S21_dB_p90_of_sample_means": 3.8754578351974485,
+     "f0_err_MHz_mean_abs": 72.93721309432655,
+     "f0_err_MHz_max_abs": 108.0809543614345,
+     "f0_err_pct_mean_abs": 1.4051038720725342,
+     "bw_err_MHz_mean_abs": 8.838334893376043,
+     "bw_err_pct_mean_abs": 1.5620383635648567,
+     "S11_lin_mean_abs": 0.057213558629155156,
+     "S11_dB_mean_abs_where_above_m20dB": 0.9108029931783677,
+     "n": 10,
+     "f0_err_MHz_mean_signed": 72.93721309432655
+    },
+    "circuit_sblock": {
+     "n_dead_excluded": 0,
+     "n_split_passband": 8,
+     "passband_S21_dB_mean": 2.6007540464401244,
+     "passband_S21_dB_max": 9.324649810791016,
+     "passband_S21_dB_p90_of_sample_means": 3.2745962381362914,
+     "f0_err_MHz_mean_abs": 54.08699112996898,
+     "f0_err_MHz_max_abs": 87.21832824844799,
+     "f0_err_pct_mean_abs": 1.0429295451998006,
+     "bw_err_MHz_mean_abs": 19.861666096034014,
+     "bw_err_pct_mean_abs": 3.5334112226318295,
+     "S11_lin_mean_abs": 0.049974925071001056,
+     "S11_dB_mean_abs_where_above_m20dB": 0.8103850781917572,
+     "n": 10,
+     "f0_err_MHz_mean_signed": 54.08699112996898
+    }
+   },
+   "correlation": {
+    "circuit_physical": {
+     "cos_residual_circuit_vs_prior": 0.971476137638092,
+     "cos_residual_circuit_vs_prior_S21": 0.9725857973098755,
+     "cos_correction_circuit_vs_palace": -0.30759525299072266,
+     "explained_fraction_of_prior_residual": -0.24891018867492676,
+     "pearson_f0_err_circuit_vs_prior": 0.9740153322869942,
+     "per_sample_cos_residual_median": 0.9714441001415253
+    },
+    "circuit_sblock": {
+     "cos_residual_circuit_vs_prior": 0.997327983379364,
+     "cos_residual_circuit_vs_prior_S21": 0.9972977638244629,
+     "cos_correction_circuit_vs_palace": 0.39856359362602234,
+     "explained_fraction_of_prior_residual": 0.05570787191390991,
+     "pearson_f0_err_circuit_vs_prior": 0.9827512724697474,
+     "per_sample_cos_residual_median": 0.9974449276924133
+    }
+   }
+  }
+ },
+ "ids": {
+  "test_26": [
+   "s0181",
+   "s0395",
+   "s0570",
+   "s0586",
+   "s0276",
+   "s0069",
+   "s0575",
+   "s0548",
+   "s0245",
+   "s0415",
+   "s0186",
+   "s0185",
+   "s0024",
+   "s0541",
+   "s0523",
+   "s0441",
+   "s0597",
+   "s0168",
+   "s0268",
+   "s0313",
+   "s0293",
+   "s0187",
+   "s0291",
+   "s0066",
+   "s0427",
+   "s0232"
+  ]
+ },
+ "prior_vs_circuit_physical_all_261": {
+  "n_dead_excluded": 0,
+  "n_split_passband": 225,
+  "passband_S21_dB_mean": 0.5963097450491113,
+  "passband_S21_dB_max": 7.924955368041992,
+  "passband_S21_dB_p90_of_sample_means": 0.9622051119804382,
+  "f0_err_MHz_mean_abs": 18.690380904592462,
+  "f0_err_MHz_max_abs": 43.959365901166336,
+  "f0_err_pct_mean_abs": 0.3608230938108929,
+  "bw_err_MHz_mean_abs": 29.598648521548498,
+  "bw_err_pct_mean_abs": 6.057836636149048,
+  "S11_lin_mean_abs": 0.011343840940523592,
+  "S11_dB_mean_abs_where_above_m20dB": 0.2268638559527895,
+  "n": 261
+ },
+ "timing": {
+  "batch_physical": {
+   "n": 271,
+   "wall_s": 167.361,
+   "s_per_solve": 0.6176,
+   "host": {
+    "cpus": 8,
+    "load_1m": 8.71,
+    "heavy_em_processes": 9
+   }
+  },
+  "batch_sblock": {
+   "n": 271,
+   "wall_s": 228.466,
+   "s_per_solve": 0.843,
+   "host": {
+    "cpus": 8,
+    "load_1m": 8.64,
+    "heavy_em_processes": 9
+   }
+  },
+  "single_solve": {
+   "host": {
+    "cpus": 8,
+    "load_1m": 9.07,
+    "heavy_em_processes": 9,
+    "ram_available_gb": 22.34
+   },
+   "physical": {
+    "n": 5,
+    "wall_s_mean": 0.8291999999999999,
+    "wall_s_min": 0.8034,
+    "wall_s_max": 0.8801
+   },
+   "sblock": {
+    "n": 5,
+    "wall_s_mean": 1.0844399999999998,
+    "wall_s_min": 1.0133,
+    "wall_s_max": 1.1751
+   },
+   "prior_python": {
+    "n": 50,
+    "wall_s_mean": 0.001026144027709961
+   }
+  },
+  "palace_coarse_wall_s_mean": 662.5650957854406
+ },
+ "crosscheck_sblock_path": [
+  {
+   "id": "nominal",
+   "circuitrf_vs_qucsator_max_abs_dS": 0.0012412605288926366,
+   "circuitrf_wall_s": 9.9417,
+   "scikit-rf_vs_qucsator_max_abs_dS": 0.0029613846811702526,
+   "scikit-rf_wall_s": 0.1258,
+   "prior_blocks_qucsator_vs_s_prior_max_abs_dS": 1.6376511033047518e-11,
+   "prior_blocks_circuitrf_vs_s_prior_max_abs_dS": 6.864574200223569e-11,
+   "prior_blocks_scikit-rf_vs_s_prior_max_abs_dS": 1.6373444926811966e-11
+  },
+  {
+   "id": "s0181",
+   "circuitrf_vs_qucsator_max_abs_dS": 0.0013208970928857103,
+   "circuitrf_wall_s": 6.5949,
+   "scikit-rf_vs_qucsator_max_abs_dS": 0.0031271804113931,
+   "scikit-rf_wall_s": 0.1096,
+   "prior_blocks_qucsator_vs_s_prior_max_abs_dS": 1.5439811643558596e-11,
+   "prior_blocks_circuitrf_vs_s_prior_max_abs_dS": 6.950332342242218e-11,
+   "prior_blocks_scikit-rf_vs_s_prior_max_abs_dS": 1.5439729595029723e-11
+  },
+  {
+   "id": "s0395",
+   "circuitrf_vs_qucsator_max_abs_dS": 0.001886309995721376,
+   "circuitrf_wall_s": 6.4537,
+   "scikit-rf_vs_qucsator_max_abs_dS": 0.0044803159445836625,
+   "scikit-rf_wall_s": 0.1058,
+   "prior_blocks_qucsator_vs_s_prior_max_abs_dS": 2.1311389384970932e-11,
+   "prior_blocks_circuitrf_vs_s_prior_max_abs_dS": 7.06140430294648e-11,
+   "prior_blocks_scikit-rf_vs_s_prior_max_abs_dS": 2.131154348583469e-11
+  },
+  {
+   "id": "s0570",
+   "circuitrf_vs_qucsator_max_abs_dS": 0.0017811122548226466,
+   "circuitrf_wall_s": 7.4584,
+   "scikit-rf_vs_qucsator_max_abs_dS": 0.0042567278374820005,
+   "scikit-rf_wall_s": 0.1099,
+   "prior_blocks_qucsator_vs_s_prior_max_abs_dS": 3.465980702472183e-11,
+   "prior_blocks_circuitrf_vs_s_prior_max_abs_dS": 7.125397055543525e-11,
+   "prior_blocks_scikit-rf_vs_s_prior_max_abs_dS": 3.466192227228105e-11
+  }
+ ],
+ "w50_feed": {
+  "w_mm": 1.1122128101275641,
+  "z0_ohm_3GHz": 49.98320022036275,
+  "z0_ohm_7GHz": 50.00979403709649,
+  "source": "scikit-rf MLine (Hammerstad-Jensen + Kirschning-Jansen dispersion), as qucsator MLIN"
+ },
+ "lint_nominal_physical": {
+  "counts": {
+   "error": 0,
+   "warning": 1,
+   "info": 4
+  },
+  "findings": [
+   "warning SUP001: sparam: runs in ['qucsator']; skipped: ['circuitrf', 'ngspice', 'xyce']",
+   "info TLN006: ST0: width ratio 1.26 < 1.5: below the step capacitance fit (1.5-3.5); the fitted C is negative here. The step is small at such ratios",
+   "info TLN006: ST1: width ratio 1.22 < 1.5: below the step capacitance fit (1.5-3.5); the fitted C is negative here. The step is small at such ratios",
+   "info TLN006: ST2: width ratio 1.22 < 1.5: below the step capacitance fit (1.5-3.5); the fitted C is negative here. The step is small at such ratios",
+   "info TLN006: ST3: width ratio 1.26 < 1.5: below the step capacitance fit (1.5-3.5); the fitted C is negative here. The step is small at such ratios"
+  ]
+ },
+ "step_width_ratios_all_261": {
+  "n_steps": 522,
+  "min": 1.0002309644118212,
+  "max": 1.5230543481629186,
+  "frac_below_1.5": 0.9712643678160919,
+  "frac_with_negative_fitted_C": 0.8524904214559387,
+  "ratio_where_fitted_C_is_zero": 1.2803463594230744
+ },
+ "mode_diagnostic_nominal": {
+  "f_GHz": [
+   3.0,
+   5.0,
+   7.0
+  ],
+  "note": "lossless (tan d = 0); qucsator = MCOUPLED Kirschning-Jansen static and dispersion; prior = Kirschning-Jansen static + Kobayashi dispersion per mode",
+  "section_1": {
+   "qucsator_Zeven_ohm": [
+    69.35968157726788,
+    69.36191923050835,
+    69.39508451465021
+   ],
+   "qucsator_eeff_even": [
+    2.9916615384779583,
+    2.9955713900553422,
+    2.9996860417961737
+   ],
+   "qucsator_Zodd_ohm": [
+    41.785059176611625,
+    41.71931861563216,
+    41.65805535152393
+   ],
+   "qucsator_eeff_odd": [
+    2.489037312657675,
+    2.4892916350163126,
+    2.489743786157717
+   ],
+   "prior_Zeven_ohm": [
+    69.32231382078652,
+    69.2537254366041,
+    69.1729201180682
+   ],
+   "prior_eeff_even": [
+    2.9928116329254015,
+    2.9987426861004245,
+    3.0057528250104104
+   ],
+   "prior_Zodd_ohm": [
+    41.75967521254849,
+    41.622182857858355,
+    41.46331949616587
+   ],
+   "prior_eeff_odd": [
+    2.5043863050679995,
+    2.5209593280617555,
+    2.5403140395168284
+   ]
+  },
+  "section_2": {
+   "qucsator_Zeven_ohm": [
+    56.14263937002498,
+    56.146134148738255,
+    56.17830476422226
+   ],
+   "qucsator_eeff_even": [
+    3.033193522229609,
+    3.0367255964421958,
+    3.0404991769527703
+   ],
+   "qucsator_Zodd_ohm": [
+    45.08077821682435,
+    44.91129848642938,
+    44.763101908134374
+   ],
+   "qucsator_eeff_odd": [
+    2.6248624403333287,
+    2.626252021678944,
+    2.6280323632765654
+   ],
+   "prior_Zeven_ohm": [
+    56.106425562844464,
+    56.04439719215646,
+    55.97246607594384
+   ],
+   "prior_eeff_even": [
+    3.0357931918367584,
+    3.0425167724405817,
+    3.050341771686211
+   ],
+   "prior_Zodd_ohm": [
+    45.235793980548756,
+    45.094625374655706,
+    44.93390095681468
+   ],
+   "prior_eeff_odd": [
+    2.639721679639809,
+    2.6562748324713543,
+    2.6753113175485153
+   ]
+  }
+ },
+ "pozar_nominal_mesh_study": {
+  "p": [
+   0.8833594228971242,
+   1.0771281780311608,
+   0.12247475109926032,
+   0.5318707813337046,
+   8.741129011038897,
+   8.656004142076906,
+   3.66,
+   0.508
+  ],
+  "f0_definition": "-3 dB band centre (prior.passband_metrics), as in the mesh study",
+  "palace_f0_GHz_quoted": {
+   "coarse_scale_1.8": 4.909,
+   "medium_scale_1.4": 4.967,
+   "fine_scale_1.0": 4.981,
+   "source": "docs/reports/filter-fm.md sec. 1 (AdaptiveTol 1e-3, 2-8 GHz)"
+  },
+  "prior_f0_GHz": 5.008199245814913,
+  "circuit_physical_f0_GHz": 5.021939571481515,
+  "circuit_sblock_f0_GHz": 5.006654953873985
+ }
+}
