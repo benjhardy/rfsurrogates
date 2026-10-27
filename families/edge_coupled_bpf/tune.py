@@ -11,6 +11,8 @@ Targets (on the Palace response): f0 within 0.5 % of the prior's f0, 3 dB BW wit
 bandwidth) of the prior's, |S11| in-band peaks within 1 dB of each other. Everything is logged to tune_log.json.
 
     python tune.py [--max-iter 5] [--ranks 8]
+    python tune.py --design design_rl20.json --log tune_log_rl20.json --prefix tune20_ --rl 20
+        (another nominal; --rl also requires every in-band |S11| peak to be at least RL - 1 dB down)
 """
 from __future__ import annotations
 
@@ -55,7 +57,7 @@ def run_palace(name, p, ranks):
     d = HERE / "runs" / name
     if not (d / "output" / "port-S.csv").exists():
         build_case.build(name, p, **SETTINGS)
-        (HERE / "queue_tune.txt").write_text(f"{name} {ranks}\n")
+        (HERE / "queue_tune.txt").write_bytes(f"{name} {ranks}\n".encode())      # LF: bash reads it
         t0 = time.time()
         subprocess.run(WSL, check=False)
         wall = time.time() - t0
@@ -86,31 +88,40 @@ def features(f, s11, s21):
     return prior.passband_features(f, s11, s21)
 
 
-def meets(feat, target):
+def meets(feat, target, rl=None):
     ok_f0 = abs(feat["f0_GHz"] - target["f0_GHz"]) / target["f0_GHz"] <= 0.005
     ok_bw = abs(feat["BW_GHz"] / feat["f0_GHz"] - target["BW_GHz"] / target["f0_GHz"]) <= 0.01
     ok_rip = len(feat["peaks_dB"]) == 2 and feat["peak_spread_dB"] <= 1.0
-    return ok_f0 and ok_bw and ok_rip, {"f0": ok_f0, "BW": ok_bw, "ripple": ok_rip}
+    parts = {"f0": ok_f0, "BW": ok_bw, "ripple": ok_rip}
+    if rl is not None:
+        parts["RL"] = len(feat["peaks_dB"]) > 0 and max(feat["peaks_dB"]) <= -(rl - 1.0)
+    return all(parts.values()), parts
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-iter", type=int, default=5)
     ap.add_argument("--ranks", type=int, default=8)
+    ap.add_argument("--design", default="design.json", help="file with the prior-optimal nominal")
+    ap.add_argument("--log", default="tune_log.json")
+    ap.add_argument("--prefix", default="tune_", help="run name prefix")
+    ap.add_argument("--rl", type=float, help="return-loss target (dB) for the stop rule")
     a = ap.parse_args()
-    d = json.loads((HERE / "design.json").read_text())
+    global LOG
+    LOG = HERE / a.log
+    d = json.loads((HERE / a.design).read_text())
     p_star = list(d["nominal"]["p"])                         # prior-optimal (equiripple in the prior)
     target = d["nominal"]["prior_features"]                   # lossy prior features at p_star
     log = {"settings": {k: (v if not isinstance(v, list) else v) for k, v in SETTINGS.items()}, "p_star": p_star,
            "target": target, "iterations": [], "started": time.strftime("%Y-%m-%d %H:%M:%S")}
     t_start = time.time()
-    p_f = list(p_star)
+    p_f = list(d["nominal"].get("start_p") or p_star)        # optional first guess, e.g. mapped from an earlier tune
     for k in range(a.max_iter):
-        name = f"tune_{k}"
+        name = f"{a.prefix}{k}"
         res, f, s11, s21, wall = run_palace(name, p_f, a.ranks)
         feat = features(f, s11, s21)
         x_c, cost = extract(p_f, f, s11, s21, feat["f0_GHz"], feat["BW_GHz"], span=EXTRACT_SPAN)
-        ok, parts = meets(feat, target)
+        ok, parts = meets(feat, target, a.rl)
         # aggressive space-mapping step, damped (0.8) and clamped to +-20 % per iteration per parameter
         step = [DAMP * (xs - xc) for xs, xc in zip(p_star[2:6], x_c)]
         step = [float(np.clip(st, -0.2 * pf, 0.2 * pf)) for st, pf in zip(step, p_f[2:6])]

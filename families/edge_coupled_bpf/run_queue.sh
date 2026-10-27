@@ -18,6 +18,8 @@ exec > >(tee -a "$LOG") 2>&1
 echo "[$(date '+%F %T')] queue start: $QUEUE, $(nproc) cpus, $(free -g | awk '/Mem/{print $7}') GB free"
 
 done_run() { [ -s "$ROOT/runs/$1/output/port-S.csv" ] && grep -q Elapsed "$ROOT/runs/$1/time.log" 2>/dev/null; }
+# a run that finished (Elapsed in time.log) without port-S.csv failed: it is not retried; remove its time.log to retry
+tried_run() { grep -q Elapsed "$ROOT/runs/$1/time.log" 2>/dev/null; }
 
 run_one() {   # name ranks
   local name=$1 np=${2:-8} d=$ROOT/runs/$1
@@ -28,13 +30,14 @@ run_one() {   # name ranks
     [ -f "$args" ] && (cd "$ROOT" && "$PY" build_case.py --id "$name" $(cat "$args") --quiet 2>&1 | tail -1)
   fi
   if [ ! -f "$d/config.json" ]; then echo "[$(date '+%T')] $name: no config.json, skipped"; return; fi
-  if done_run "$name"; then echo "[$(date '+%T')] $name: already done, skipped"; return; fi
+  if tried_run "$name"; then echo "[$(date '+%T')] $name: already run, skipped"; return; fi
   echo "[$(date '+%T')] $name: start, $np ranks"
   ( cd "$d" && rm -rf output && /usr/bin/time -v $RUN_PALACE config.json "$np" > palace.log 2> time.log )
   local wall rss unk
   wall=$(grep -E 'Elapsed' "$d/time.log" | awk '{print $NF}')
   rss=$(grep 'Maximum resident' "$d/time.log" | awk '{printf "%.2f GB", $NF/1048576}')
   unk=$(grep -oE 'global unknowns = [0-9]+' "$d/palace.log" | tail -1)
+  done_run "$name" || { echo "[$(date '+%T')] $name: FAILED (no port-S.csv), wall $wall; see $d/palace.log"; return; }
   echo "[$(date '+%T')] $name: done, wall $wall, max RSS (one rank) $rss, $unk, $(grep -E 'peak per-node' "$d/palace.log" | tail -1 | sed 's/Estimated //')"
   (cd "$ROOT" && "$PY" collect.py --run "$name" --ranks "$np" 2>&1 | tail -3)
 }
@@ -48,10 +51,11 @@ while true; do
     if [[ $line == par:* ]]; then
       all_done=1
       IFS=',' read -ra jobs <<< "${line#par:}"
-      for j in "${jobs[@]}"; do set -- $j; done_run "$1" || all_done=0; done
+      for j in "${jobs[@]}"; do set -- $j; tried_run "$1" || all_done=0; done
       [ $all_done = 1 ] && continue
     else
-      set -- $line; done_run "$1" && continue
+      set -- $line; tried_run "$1" && continue
+      [ -f "$ROOT/runs/$1/config.json" ] || [[ $1 =~ ^[sh][0-9]{4}$ ]] || { echo "[$(date '+%T')] $1: no config.json, skipped"; continue; }
     fi
     next=$line; break
   done < "$QUEUE"

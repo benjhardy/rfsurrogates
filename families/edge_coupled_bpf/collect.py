@@ -71,7 +71,7 @@ def metrics(f, s11, s21):
     return out
 
 
-def collect(run: str, ranks: int | None = None, record: bool = True):
+def collect(run: str, ranks: int | None = None, record: bool = False):
     d = HERE / "runs" / run
     summ = json.loads((d / "build_summary.json").read_text())
     csv = d / "output" / "port-S.csv"
