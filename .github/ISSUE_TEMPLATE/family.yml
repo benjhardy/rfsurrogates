@@ -1,0 +1,51 @@
+name: "Propose a device family"
+description: "A new family of devices to model (family author role)."
+title: "family: <device>"
+labels: ["kind:family", "role:family-author", "status:needs-maintainer"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Look in `coverage.json` (or `docs/COVERAGE.md`) first: the device may already be listed, with its building
+        blocks and the route that fits it. Before the proposal is accepted, a family author may run a pilot of
+        about 2 solves, and no more.
+  - type: input
+    id: device
+    attributes:
+      label: "Device"
+      description: "the device id in coverage.json, if it has one"
+      placeholder: "hairpin_bpf"
+    validations:
+      required: true
+  - type: textarea
+    id: params
+    attributes:
+      label: "Parameter vector and box"
+      description: "names, units, ranges"
+    validations:
+      required: true
+  - type: textarea
+    id: prior
+    attributes:
+      label: "Analytic prior"
+      description: "the textbook model that the network corrects, with a reference"
+    validations:
+      required: true
+  - type: textarea
+    id: validity
+    attributes:
+      label: "Validity rule"
+      description: "which geometries are not the device, and the cheap test for it"
+    validations:
+      required: true
+  - type: textarea
+    id: ports
+    attributes:
+      label: "Ports, frequency grid and metrics"
+    validations:
+      required: true
+  - type: textarea
+    id: pilot
+    attributes:
+      label: "Pilot"
+      description: "solve time and memory of a pilot, if you ran one"

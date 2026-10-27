@@ -1,0 +1,24 @@
+{
+ "comment": "Labels for the task queue (GitHub issues). docs/AGENT_ROLES.md says what each role may do. Create them with `gh label create` or the GitHub UI; tests/test_issue_templates.py checks that every label a template uses is listed here.",
+ "labels": [
+  {"name": "role:orchestrator", "color": "5319e7", "description": "plans tasks from the roadmap and coverage.json"},
+  {"name": "role:family-author", "color": "1d76db", "description": "adds a device family"},
+  {"name": "role:sampler", "color": "0e8a16", "description": "chooses designs and estimates their cost"},
+  {"name": "role:launcher", "color": "b60205", "description": "the only role that starts a solver"},
+  {"name": "role:solver-adapter", "color": "d93f0b", "description": "connects one solver to the record format"},
+  {"name": "role:verifier", "color": "fbca04", "description": "checks records before they count"},
+  {"name": "role:curator", "color": "c2e0c6", "description": "keeps the data index and the upload staging"},
+  {"name": "role:trainer", "color": "0052cc", "description": "trains a release on passed records"},
+  {"name": "role:evaluator", "color": "006b75", "description": "checks a release independently"},
+  {"name": "role:content", "color": "bfdadc", "description": "docs, coverage map, model cards, pages"},
+  {"name": "kind:claim", "color": "ededed", "description": "a contributor reserves design ids before solving"},
+  {"name": "kind:batch", "color": "ededed", "description": "solved records ready for verification"},
+  {"name": "kind:family", "color": "ededed", "description": "a proposed device family"},
+  {"name": "kind:task", "color": "ededed", "description": "a task for one role"},
+  {"name": "status:needs-maintainer", "color": "e99695", "description": "waits for a maintainer decision"},
+  {"name": "status:accepted", "color": "0e8a16", "description": "the maintainer accepted it; work can start"},
+  {"name": "status:in-progress", "color": "fef2c0", "description": "someone is working on it"},
+  {"name": "status:needs-review", "color": "f9d0c4", "description": "a verdict or result needs a person to look"},
+  {"name": "status:blocked", "color": "000000", "description": "cannot go on; the issue says why"}
+ ]
+}

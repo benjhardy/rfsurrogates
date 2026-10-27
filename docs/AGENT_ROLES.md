@@ -1,6 +1,14 @@
-# Agent roles and guard rails (draft for discussion, 2026-10-26)
+# Agent roles and guard rails (draft, 2026-10-26)
 
-Status: draft. Nothing here is enforced yet. The open questions at the end need Ben's decisions.
+Status: draft. Nothing here is enforced yet. Two questions are decided (below); the other open questions at the end
+need the maintainer's decisions.
+
+## Decisions
+
+| date | question | decision | what follows |
+|---|---|---|---|
+| 2026-10-26 | Where do agents run? | On the contributor's own machine, for now. | The contributor is the person at the budget gate for their own compute. The maintainer's gates are the design claim, the merge of records and the release. The project runs no agents for contributors. |
+| 2026-10-26 | What holds the task queue? | GitHub issues. | Issue forms in `.github/ISSUE_TEMPLATE/` (claim, batch, family, task) and the labels in `.github/labels.json` (`role:*`, `kind:*`, `status:*`). Run requests, claims and verdict summaries are issues; records and results stay files. |
 
 ## Principles
 
@@ -12,10 +20,10 @@ Status: draft. Nothing here is enforced yet. The open questions at the end need 
    run request.
 3. **Files, not chat, carry the work.** Each hand-over is a file with a schema: a run request, a solver record, a
    verdict, a manifest row, a results file. A role reads the files it needs and writes only its own outputs.
-4. **Humans hold the gates.** The maintainer (Ben) approves:
-   - solver budgets above a set limit;
-   - merges;
-   - Hugging Face uploads, pushes, releases and announcements.
+4. **Humans hold the gates.**
+   - The contributor approves solver budgets on their own machine above a limit they set.
+   - The maintainer (Ben) approves design claims, merges, Hugging Face uploads, pushes, releases and
+     announcements.
 
    Public text is written by people.
 5. **Agents are optional.** A person can do any role. An agent in a role passes the same checks as a person.
@@ -40,19 +48,29 @@ Status: draft. Nothing here is enforced yet. The open questions at the end need 
 
 ### Flow for one batch of new data
 
+Everything in the box runs on the contributor's machine. Each dotted arrow is a GitHub issue (claim, batch) or a
+pull request.
+
 ```mermaid
 flowchart LR
-  O[Orchestrator] -->|task| S[Sampler]
-  S -->|run request + cost| M{{Maintainer: budget gate}}
-  M -->|approved| L[Launcher]
-  L -->|solver output| A[Solver adapter]
-  A -->|records| V[Verifier]
+  subgraph contributor [contributor's machine]
+    O[Orchestrator] -->|task| S[Sampler]
+    S -->|design list + cost| B{{Contributor: budget gate}}
+    B -->|approved| L[Launcher]
+    L -->|solver output| A[Solver adapter]
+  end
+  S -.->|claim issue| M{{Maintainer: claim gate}}
+  M -.->|status:accepted| L
+  A -.->|batch issue + files| V[Verifier]
   V -->|verdicts| C[Curator]
   C -->|manifest rows| T[Trainer]
   T -->|checkpoints| E[Evaluator]
   E -->|report + model card| K[Content]
   K --> M2{{Maintainer: release gate}}
 ```
+
+The verifier, curator, trainer and evaluator steps are done by the maintainer (with or without agents) until other
+people take those roles.
 
 ## What the verifier checks
 
@@ -102,20 +120,20 @@ The rest belong in an rfsurrogates launcher wrapper.
   - `palace-tools`, from palace-agent-tools, for building, linting, estimating, running and checking;
   - later a small `rfsurrogates` server with `check_record`, `make_records`, `coverage` and `fetch`, so that agents
     call the checks instead of re-implementing them.
-- **Task files** under `tasks/` (or GitHub issues with role labels): run requests, verdicts and approvals, each with
-  a schema and a test.
+- **GitHub issues** carry the tasks (decided 2026-10-26): the forms in `.github/ISSUE_TEMPLATE/` and the labels in
+  `.github/labels.json`. `tests/test_issue_templates.py` checks that the forms use only listed labels. An agent
+  reads and writes issues with `gh`; only the maintainer sets `status:accepted`.
 - **CI** runs the verifier and the content checks (`tools/make_coverage.py --check`, numbers-from-files lint) on every
   pull request. A contributor's own agents then face the same gates as the project's.
 
 ## Open questions
 
-1. **Where do agents run?** On contributors' machines only (they bring compute), on project machines (Ben's
-   workstation, cloud), or both?
-2. **What is the task queue?** GitHub issues with role labels (visible, contributors can pick tasks), or task files in
-   the repo (works offline, easy for agents)?
-3. **Orchestrator scope.** One per machine, or one for the project that only plans while each machine has its own
-   launcher?
-4. **Budget.** How many solver-hours may run without the maintainer's approval?
+Questions 1 (where agents run) and 2 (task queue) are decided; see [Decisions](#decisions).
+
+3. **Orchestrator scope.** With agents on contributors' machines, each contributor has their own orchestrator. Does
+   the project also keep one that only opens and labels issues from the roadmap and `coverage.json`?
+4. **Budget.** The contributor sets the limit for their own machine. Does the project set a maximum claim size
+   (for example 50 designs or 10 solver-hours per claim), so that ids are not held for a long time?
 5. **Second solver.** Which first: openEMS (open FDTD), Elmer, or none until v0.3?
 6. **Mesh-study fraction.** What share of each batch is solved again at a finer mesh (for example 5 %), and is a
    family blocked from release without it?

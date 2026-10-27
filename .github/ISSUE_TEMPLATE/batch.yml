@@ -1,0 +1,42 @@
+name: "Records ready for verification"
+description: "Solved records of a claimed batch, with the checker output (solver adapter role; the verifier role takes it from here)."
+title: "batch: <family_id> <first id>-<last id>"
+labels: ["kind:batch", "role:verifier"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The verifier must not be the person or agent that produced the records. Until the CI checker exists (v0.2),
+        a maintainer runs `contrib/check_sample.py` again on the files.
+  - type: input
+    id: claim
+    attributes:
+      label: "Claim issue"
+      placeholder: "#12"
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: "Where the files are"
+      description: "Hugging Face dataset upload or pull request"
+    validations:
+      required: true
+  - type: textarea
+    id: checker
+    attributes:
+      label: "Checker summary"
+      description: "Output of `contrib/check_sample.py` over the batch: the number of PASS, NEEDS REVIEW and FAIL records, and the reasons."
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: solver_checks
+    attributes:
+      label: "Solver checks"
+      description: "For Palace: palace_check verdicts, adaptive-sweep convergence per excitation, failed or repeated runs."
+      render: text
+  - type: input
+    id: cost
+    attributes:
+      label: "Actual solver-hours"

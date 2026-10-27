@@ -1,0 +1,45 @@
+name: "Task for one role"
+description: "A unit of work for one role (usually opened by the orchestrator or a maintainer)."
+title: "<role>: <task>"
+labels: ["kind:task"]
+body:
+  - type: dropdown
+    id: role
+    attributes:
+      label: "Role"
+      description: "Also add the matching role: label. docs/AGENT_ROLES.md lists what each role may and may not do."
+      options:
+        - "orchestrator"
+        - "family-author"
+        - "sampler"
+        - "launcher"
+        - "solver-adapter"
+        - "verifier"
+        - "curator"
+        - "trainer"
+        - "evaluator"
+        - "content"
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: "Task"
+      description: "what done looks like"
+    validations:
+      required: true
+  - type: textarea
+    id: inputs
+    attributes:
+      label: "Inputs"
+      description: "files, issues and records that this task reads"
+  - type: textarea
+    id: outputs
+    attributes:
+      label: "Outputs"
+      description: "files that this task writes; nothing else may change"
+  - type: input
+    id: gate
+    attributes:
+      label: "Maintainer gate"
+      description: "the decision a person makes before or after this task, if any"

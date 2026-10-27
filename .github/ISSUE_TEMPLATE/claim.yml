@@ -1,0 +1,60 @@
+name: "Claim designs to solve"
+description: "Reserve design ids of a registered family before you solve them on your machine (sampler and launcher roles)."
+title: "claim: <family_id> <first id>-<last id>"
+labels: ["kind:claim", "role:sampler", "status:needs-maintainer"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Solve only designs that come from the family's box and pass its validity rule (CONTRIBUTING.md, step b).
+        The compute is yours, so you set the solver budget on your machine. The maintainer only checks that the
+        ids are free and the designs are in the box. Start the solves after the issue gets `status:accepted`.
+  - type: input
+    id: family
+    attributes:
+      label: "Family id"
+      description: "as in families.json"
+      placeholder: "edge_coupled_bpf"
+    validations:
+      required: true
+  - type: textarea
+    id: designs
+    attributes:
+      label: "Designs"
+      description: "The id range, or the seed and count you gave the family sampler (for example `design.py --extend 300 10`)."
+    validations:
+      required: true
+  - type: dropdown
+    id: fidelity
+    attributes:
+      label: "Fidelity"
+      options:
+        - "coarse (production build arguments)"
+        - "medium (holdout build arguments)"
+        - "fine"
+        - "other (say which below)"
+    validations:
+      required: true
+  - type: input
+    id: solver
+    attributes:
+      label: "Solver and version"
+      placeholder: "Palace 0.16"
+    validations:
+      required: true
+  - type: input
+    id: cost
+    attributes:
+      label: "Estimated solver-hours on your machine"
+      description: "palace_estimate_cost or your own measurement"
+    validations:
+      required: true
+  - type: dropdown
+    id: runner
+    attributes:
+      label: "Who runs the solves"
+      options:
+        - "a person"
+        - "an agent in the launcher role, supervised by me"
+    validations:
+      required: true
