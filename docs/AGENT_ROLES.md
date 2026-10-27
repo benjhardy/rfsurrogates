@@ -1,7 +1,15 @@
 # Agent roles and guard rails (draft, 2026-10-26)
 
-Status: draft. Nothing here is enforced yet. Two questions are decided (below); the other open questions at the end
-need the maintainer's decisions.
+Status: partly built (2026-10-27). Three pieces exist; the other roles are still a design.
+
+| piece | where | role it covers |
+|---|---|---|
+| one-command contributor path with the launcher rules (machine lock, STOP file, budget, timeout, case root) | `tools/contribute.py` | sampler, launcher, solver adapter (Palace; export and import for other solvers) |
+| verifier in CI: the checker rerun on every record of a data pull request, with the rules of the base branch | `tools/verify_batch.py`, `.github/workflows/verify-data.yml` | verifier |
+| contributor skill and repo rules for agents | `.claude/skills/contribute-data/SKILL.md`, `AGENTS.md` | the gates for an agent on a contributor's machine |
+| maintainer ingest: upload to Hugging Face, rows to the data index | `tools/ingest_batch.py` | curator |
+
+The open questions at the end need the maintainer's decisions.
 
 ## Decisions
 
@@ -9,6 +17,8 @@ need the maintainer's decisions.
 |---|---|---|---|
 | 2026-10-26 | Where do agents run? | On the contributor's own machine, for now. | The contributor is the person at the budget gate for their own compute. The maintainer's gates are the design claim, the merge of records and the release. The project runs no agents for contributors. |
 | 2026-10-26 | What holds the task queue? | GitHub issues. | Issue forms in `.github/ISSUE_TEMPLATE/` (claim, batch, family, task) and the labels in `.github/labels.json` (`role:*`, `kind:*`, `status:*`). Run requests, claims and verdict summaries are issues; records and results stay files. |
+| 2026-10-27 | How does a contributor run the path? | One command, `tools/contribute.py go`, run twice: before and after the claim is accepted. | The claim gate stays. The launcher rules are in the tool, not a separate role. Data pull requests carry the records in `incoming/`; the maintainer uploads them to Hugging Face after the merge. |
+| 2026-10-27 | Which solvers? | Palace runs inside the tool; HFSS, CST, openEMS and others by geometry export (JSON, DXF) and Touchstone import. | Other solvers form the fidelity group `other`. |
 
 ## Principles
 

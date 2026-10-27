@@ -40,11 +40,14 @@ python core/inverse.py --f0 5.2 --bw 0.5 --rl 10      # find a geometry for a sp
 
 ## Contribute
 
-There are three ways to help. [CONTRIBUTING.md](CONTRIBUTING.md) has the step-by-step guide for each.
+Solver time is the bottleneck, so the main way to help is to share it.
+[The process in one picture](docs/img/contribute_process.png). There are three ways to help, and
+[CONTRIBUTING.md](CONTRIBUTING.md) has the step-by-step guide for each.
 
-1. **Solve designs.** Run a batch of filter designs with your own solver, check each result with one script, and
-   submit the records. A batch of 50 takes about 5 hours on a desktop with Palace. Data pull requests open with
-   v0.2, when the checker runs in CI. Until then, open an issue if you want to prepare data.
+1. **Solve designs.** One command draws designs, solves them on your machine, checks each result and opens one pull
+   request: `python tools/contribute.py go --n 20 --contributor <your GitHub handle>`. Palace runs by itself. For
+   HFSS, CST or openEMS, the tool exports the geometry and reads your Touchstone files back. A batch of 50 takes
+   about 5 hours on a desktop with Palace. Data pull requests open with v0.2.
 2. **Add a device family.** Propose a device with a parameter box and a textbook model of its response. The hairpin
    band-pass filter is next. The [coverage map](docs/COVERAGE.md) lists 31 device types and their status.
 3. **Improve the code.** Issues and pull requests are welcome now. Open an issue first for anything beyond a small
