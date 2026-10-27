@@ -151,7 +151,7 @@ footer.foot a { color: var(--muted); }
     <p class="eyebrow">Inverse design for passive devices &middot; rfsurrogates</p>
     <div class="devrow"><label class="lbl" for="device">Device</label><select id="device" aria-label="Device family"></select><span class="status" id="loadStatus" aria-live="polite">Loading weights&hellip;</span></div>
     <h1>Filter Surrogate</h1>
-    <p class="lede" id="lede">Edge-coupled microstrip band-pass filter, 3&ndash;7 GHz, RO4350B (&epsilon;<sub>r</sub> 3.66, h 0.508 mm): an analytic coupled-line prior plus a learned correction trained on 261 Palace FEM solves. Runs in your browser. Simulation only.</p>
+    <p class="lede" id="lede">Edge-coupled microstrip band-pass filter, 3&ndash;7 GHz, RO4350B (&epsilon;<sub>r</sub> 3.66, h 0.508 mm): a textbook coupled-line model plus a network trained on 261 Palace FEM solves. It gives |S21| and |S11| in about 2 ms in your browser. Simulated only.</p>
   </header>
 
   <section class="calc" aria-label="Surrogate">
@@ -165,7 +165,7 @@ footer.foot a { color: var(--muted); }
         <div class="legend" id="plotLeg"></div>
         <div class="pad">
           <div class="readout" id="metricsOut"></div>
-          <p class="note" id="metricsNote">f0 = |S21|&sup2;-weighted centroid over 3&ndash;7 GHz (continuous when the passband splits). 3 dB bandwidth = widest band within 3 dB of the |S21| peak; it is flagged when two peaks within 6 dB of the maximum are separated by a dip deeper than 3 dB (split passband, no single 3 dB band). Return loss = worst |S11| between the outer reflection zeros, as in the repo's prior diagnostics. Spread = mean over the passband of the standard deviation of |S21| in dB across the five seeds.</p>
+          <p class="note" id="metricsNote">f0: centre of |S21|&sup2;. BW: widest band within 3 dB of the peak; "split" when the passband has two peaks. Return loss: worst |S11| between the outer reflection zeros. Spread: seed-to-seed deviation of |S21| in the passband.</p>
         </div>
       </div>
 
@@ -174,32 +174,32 @@ footer.foot a { color: var(--muted); }
           <h3>Layout in 3D</h3>
           <div class="tools3d" id="sceneTools" role="group" aria-label="3D view controls"></div>
         </div>
-        <div class="stage3d" id="stage3d"><div class="fallback" id="sceneFallback" hidden>The 3D view needs WebGL, which this browser does not provide. The rest of the page works without it.</div></div>
+        <div class="stage3d" id="stage3d"><div class="fallback" id="sceneFallback" hidden>This browser has no WebGL, so the 3D view is off.</div></div>
         <div class="pad">
           <div class="key3d"><span><i style="background:var(--accent)"></i>incident at port 1</span><span><i style="background:var(--ok)"></i>transmitted to port 2, size &prop; |S21|</span><span><i style="background:var(--field)"></i>reflected at port 1, size &prop; |S11|</span></div>
           <p class="note" id="sceneNote"></p>
-          <p class="note">The layout is drawn from the same rectangles as <code>build_case.py</code> and moves with the sliders; point at a slider to highlight that dimension. The pulses show |S21| and |S11| at one frequency; they are not a field solution. Copper is drawn 35 &micro;m thick so that it is visible (the solver uses a zero-thickness sheet). The thin box is the air region with absorbing walls; the blue faces are the two wave ports. Drag to turn; with the view focused: arrow keys, + and &minus;, 0 to reset, E for the exploded view.</p>
+          <p class="note">Same rectangles as the mesh generator. The pulses show |S21| and |S11|, not fields. The blue faces are the wave ports. Drag to turn; keys: arrows, + and &minus;, 0 to reset, E to explode.</p>
         </div>
       </div>
 
       <div class="card pad" id="inverseCard">
         <h3>Inverse design</h3>
-        <p class="note">Give a centre frequency, a 3 dB bandwidth and a return-loss floor. The page draws 256 Latin-hypercube points in the box, keeps the valid geometries, scores them with the selected model, and refines the best eight with Nelder&ndash;Mead. Objective: weighted squared f0 and BW error plus hinge penalties for return loss and rejection, a penalty for a split passband and for an invalid geometry. Lengths and widths stay inside the sampling box.</p>
+        <p class="note">Set f0, bandwidth and minimum return loss. The page tries 256 geometries in the box and refines the best eight. It takes about 2 s.</p>
         <div class="three">
           <div class="field"><label for="specF0">f0 <span class="u">(GHz)</span></label><input type="number" id="specF0" step="0.01" value="5.2"></div>
           <div class="field"><label for="specBW">3 dB BW <span class="u">(GHz)</span></label><input type="number" id="specBW" step="0.01" value="0.5"></div>
           <div class="field"><label for="specRL">Min return loss <span class="u">(dB)</span></label><input type="number" id="specRL" step="0.5" value="10"></div>
         </div>
-        <div class="field"><label for="specRej">Rejection <span class="u">(optional, "f:dB" list, e.g. 6.4:30, 3.6:25)</span></label><input type="text" id="specRej" placeholder="6.4:30"></div>
+        <div class="field"><label for="specRej">Rejection <span class="u">(optional, f:dB, e.g. 6.4:30)</span></label><input type="text" id="specRej" placeholder="6.4:30"></div>
         <div class="msgs" id="specMsgs" aria-live="polite"></div>
         <div class="row"><button class="btn primary" id="findBtn" type="button" disabled>Find geometry</button><span class="status" id="findStatus" aria-live="polite"></span></div>
         <div class="tblwrap"><table class="ref" id="candTbl" hidden></table></div>
-        <p class="note" id="candNote" hidden>Click a row to load it into the sliders. Candidates are ranked by the objective; a split passband adds 10 to it.</p>
+        <p class="note" id="candNote" hidden>Click a row to load it.</p>
       </div>
 
       <div class="card pad" id="accuracy">
         <h3>How good is the surrogate?</h3>
-        <p class="note">Held-out test split: 26 Palace designs the models never saw (80/10/10 split of 261 valid samples, same split for every method). Passband error = mean |&Delta;|S21|| in dB where the Palace |S21| is within 3 dB of its peak; f0 error on the |S21|&sup2; centroid.</p>
+        <p class="note">Error on 26 Palace designs that no model saw in training.</p>
         <div class="tblwrap"><table class="ref">
           <thead><tr><th>model</th><th>passband |S21| error</th><th>f0 error</th><th>BW error</th></tr></thead>
           <tbody>
@@ -207,12 +207,11 @@ footer.foot a { color: var(--muted); }
             <tr><td>prior + DeepONet, 5 seeds</td><td>0.52 dB</td><td>7.9 MHz</td><td>10.8 MHz</td></tr>
             <tr><td>DeepONet from scratch, 5 seeds</td><td>0.32 dB</td><td>4.2 MHz</td><td>26.8 MHz</td></tr>
           </tbody></table></div>
-        <p class="note">BW error is over the 6 single-passband test designs; most designs in the &plusmn;30 % / &plusmn;15 % box are detuned and have a split passband.</p>
-        <p class="note"><b>Mesh.</b> The training data are coarse-mesh solves (scale 1.8, order 2, about 258 k unknowns). Against a converged (medium) mesh on 10 held-out designs the coarse-trained prior + DeepONet is 0.91 dB off, and the coarse mesh itself is 1.03 dB off; the model is 0.52 dB from the coarse solver it learned from.</p>
-        <p class="note"><b>Learning curve.</b> The prior helps below about 50 training samples (10 samples: 1.8 dB with the prior, 9.5 dB from scratch). From about 100 samples the model trained from scratch is ahead (100 samples: 0.49 vs 0.62 dB).</p>
-        <p class="note"><b>Spread.</b> The 5-seed spread correlates with the error (Pearson r 0.55) but underestimates it: 23 % of the test designs have an error below two spreads. Treat the band as a lower bound.</p>
-        <p class="note">Simulated vs simulated (Palace FEM) &middot; one substrate &middot; not measured.</p>
-        <p class="note">Weights: <a href="https://huggingface.co/rfsurrogates/edge-coupled-bpf">rfsurrogates/edge-coupled-bpf</a> on Hugging Face (Apache-2.0).</p>
+        <p class="note">BW error uses the 6 test designs with one passband.</p>
+        <p class="note"><b>Mesh.</b> The training solves use a coarse mesh. On 10 designs solved again with a finer mesh, the coarse mesh is 1.03 dB off and the model is 0.91 dB off.</p>
+        <p class="note"><b>Prior.</b> With 10 training solves, the prior gives 1.8 dB against 9.5 dB without it. From about 100 solves, the model without the prior is better.</p>
+        <p class="note"><b>Spread.</b> The band is smaller than the true error. Use it as a lower bound.</p>
+        <p class="note">Simulated against simulated, one substrate. <a href="https://huggingface.co/rfsurrogates/edge-coupled-bpf">Model card</a>.</p>
       </div>
     </div>
 
@@ -236,8 +235,8 @@ footer.foot a { color: var(--muted); }
 
       <div class="card pad" id="refCard">
         <h3>Palace-verified designs</h3>
-        <p class="note">Six designs with a Palace FEM solve on the same grid: the tuned nominal and five held-out test designs (best, median, worst by passband error, and two single-passband ones). Loading one sets the sliders and overlays the Palace curve.</p>
-        <div class="field"><label for="refSel">Load a Palace-verified design</label><select id="refSel"><option value="">&mdash;</option></select></div>
+        <p class="note">The nominal and five test designs. Load one to show its Palace curve.</p>
+        <div class="field"><label for="refSel">Design</label><select id="refSel"><option value="">&mdash;</option></select></div>
         <div id="refInfo" hidden>
           <div class="tblwrap"><table class="ref" id="refTbl"></table></div>
           <p class="note" id="refNote"></p>
@@ -246,7 +245,7 @@ footer.foot a { color: var(--muted); }
 
       <div class="card pad" id="verifyCard">
         <h3>Verify in Palace</h3>
-        <p class="note">The page cannot run the solver. These are the sample record in the form <span class="mono">samples.json</span> uses and the commands that build the mesh, solve it in Palace 0.16 (WSL, 4 MPI ranks) and collect <span class="mono">data/palace/&lt;id&gt;.npz</span>, run from the repo root. Cost: about 11 min per sample on 4 ranks, 2 GB of RAM (coarse mesh, scale 1.8, order 2, two jobs can run at once on 8 threads).</p>
+        <p class="note">Run these commands from the repo root to solve this geometry in Palace 0.16. One solve takes about 11 min on 4 cores and 2 GB of RAM.</p>
         <div class="row"><div class="lbl" style="margin-right:auto">Sample record</div><button class="btn" id="copyJson" type="button">Copy</button></div>
         <pre class="cmd" id="jsonOut"></pre>
         <div class="row"><div class="lbl" style="margin-right:auto">Commands</div><button class="btn" id="copyCmd" type="button">Copy</button></div>
@@ -257,30 +256,28 @@ footer.foot a { color: var(--muted); }
 
   <section class="card pad" id="contribute" aria-label="Contribute data">
     <h2>Contribute data</h2>
-    <p class="note">The model is trained on contributed FEM solves. Each device family has a parametric generator, a validity rule and a frequency grid, so every record is comparable. Contributors run the solver on their own machine and submit the S-parameter record through a checker that verifies the grid, the parameter box and the geometry rule. For this family one sample costs about 11 min and 2 GB at the coarse fidelity.</p>
-    <p class="note">How to run and submit a solve: <a href="https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>. Data contributions open with v0.2.</p>
+    <p class="note">You can solve designs on your own machine and send the results. A checker tests each result before it is used. Data contributions open with v0.2: see <a href="https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
   </section>
 
   <section class="grid2">
     <div class="card pad">
       <h3>Links</h3>
       <ul class="links">
-        <li><a href="https://github.com/benjhardy/rfsurrogates">rfsurrogates on GitHub</a>: prior, dataset tools, checker, training and evaluation code, this page.</li>
-        <li><a href="https://huggingface.co/rfsurrogates/edge-coupled-bpf">Model card and weights</a>: accuracy, mesh-fidelity holdouts and limits of this model (Hugging Face).</li>
-        <li><a href="#">Write-up on LinkedIn</a>: the prior-vs-scratch result and the learning curve. <!-- TODO: LinkedIn post URL --></li>
-        <li><a href="/birdcage-builder/">Birdcage builder</a>: the other Palace front end in this lab.</li>
-        <li><a href="/agent-rf/">agent.rf</a>: the RF lab hub this page belongs to.</li>
-        <li><a href="https://awslabs.github.io/palace/stable/">Palace</a>: the open-source FEM solver behind the training data.</li>
+        <li><a href="https://github.com/benjhardy/rfsurrogates">rfsurrogates on GitHub</a>: code and data tools.</li>
+        <li><a href="https://huggingface.co/rfsurrogates/edge-coupled-bpf">Model card and weights</a> (Hugging Face).</li>
+        <li><a href="/birdcage-builder/">Birdcage builder</a>: another Palace front end.</li>
+        <li><a href="/agent-rf/">agent.rf</a>: the lab hub.</li>
+        <li><a href="https://awslabs.github.io/palace/stable/">Palace</a>: the open-source FEM solver.</li>
       </ul>
     </div>
     <div class="card pad">
       <h3>References</h3>
       <ol class="refs">
-        <li>D. M. Pozar, <i>Microwave Engineering</i>, 4th ed., Wiley (2012), sec. 8.7, coupled line filters: the N = 3 Chebyshev prototype, inverters and the coupled-line section two-port used as the prior.</li>
-        <li>M. Kirschning, R. H. Jansen, "Accurate wide-range design equations for the frequency-dependent characteristic of parallel coupled microstrip lines," <i>IEEE Trans. MTT</i> 32(1), 83&ndash;90 (1984): even/odd mode impedances and permittivities.</li>
-        <li>E. Hammerstad, &Oslash;. Jensen, "Accurate models for microstrip computer-aided design," <i>IEEE MTT-S Int. Microwave Symp. Dig.</i> (1980): single-line impedance, effective permittivity and open-end extension.</li>
+        <li>D. M. Pozar, <i>Microwave Engineering</i>, 4th ed., Wiley (2012), sec. 8.7, coupled line filters.</li>
+        <li>M. Kirschning, R. H. Jansen, "Accurate wide-range design equations for the frequency-dependent characteristic of parallel coupled microstrip lines," <i>IEEE Trans. MTT</i> 32(1), 83&ndash;90 (1984).</li>
+        <li>E. Hammerstad, &Oslash;. Jensen, "Accurate models for microstrip computer-aided design," <i>IEEE MTT-S Int. Microwave Symp. Dig.</i> (1980).</li>
         <li>M. Kobayashi, "A dispersion formula satisfying recent requirements in microstrip CAD," <i>IEEE Trans. MTT</i> 36(8), 1246&ndash;1250 (1988).</li>
-        <li>L. Lu, P. Jin, G. Pang, Z. Zhang, G. E. Karniadakis, "Learning nonlinear operators via DeepONet based on the universal approximation theorem of operators," <i>Nature Machine Intelligence</i> 3, 218&ndash;229 (2021): the branch/trunk factorisation used for the correction.</li>
+        <li>L. Lu, P. Jin, G. Pang, Z. Zhang, G. E. Karniadakis, "Learning nonlinear operators via DeepONet based on the universal approximation theorem of operators," <i>Nature Machine Intelligence</i> 3, 218&ndash;229 (2021).</li>
         <li>Palace: 3D finite element solver for computational electromagnetics, AWS Labs (open source).</li>
       </ol>
     </div>
@@ -330,7 +327,7 @@ const DEVICES = {
   'ecm-bpf-ro4350b': {
     id: 'ecm-bpf-ro4350b',
     name: 'Edge-coupled microstrip BPF (RO4350B)',
-    lede: 'Edge-coupled microstrip band-pass filter, 3&ndash;7 GHz, RO4350B (&epsilon;<sub>r</sub> 3.66, h 0.508 mm): an analytic coupled-line prior plus a learned correction trained on 261 Palace FEM solves. Runs in your browser. Simulation only.',
+    lede: 'Edge-coupled microstrip band-pass filter, 3&ndash;7 GHz, RO4350B (&epsilon;<sub>r</sub> 3.66, h 0.508 mm): a textbook coupled-line model plus a network trained on 261 Palace FEM solves. It gives |S21| and |S11| in about 2 ms in your browser. Simulated only.',
     weights: 'weights.json', refs: 'palace_refs.json',
     // UI parameters (the fixed substrate entries of p are shown, not edited); the box comes from weights.json
     params: [
@@ -342,14 +339,14 @@ const DEVICES = {
       { key: 'l2', label: 'l₂', unit: 'mm', desc: 'coupled length, inner sections' },
     ],
     fixed: [{ key: 'eps_r', label: 'εr' }, { key: 'h', label: 'h', unit: 'mm' }],
-    substrateText: 'RO4350B: εr 3.66, h 0.508 mm, tan δ 0.0037; copper as a zero-thickness PEC sheet; 50 Ω feeds of width 1.1122 mm.',
+    substrateText: 'RO4350B: εr 3.66, h 0.508 mm, tan δ 0.0037. 50 Ω feeds, 1.112 mm wide.',
     models: [{ id: 'prior', label: 'prior only' }, { id: 'stageB', label: 'prior + DeepONet (5-seed ensemble)' }, { id: 'scratch', label: 'DeepONet from scratch (5-seed ensemble)' }],
     defaultModel: 'stageB',
     prior: Surrogate.sPrior,
     predict: Surrogate.predict, metrics: Surrogate.metrics, inverse: Surrogate.inverse,
     clearance: Surrogate.clearance, cMin: Surrogate.C_MIN,
     scene: p => filterScene(p),
-    validityText: 'Validity rule: clearance > 0.05 mm, clearance = min(g₁ − max(0, (w₂ − w₁)/2), g₂ − max(0, (w₁ − w₂)/2), g₁ − max(0, (W50 − w₁)/2)). Below zero the strips fuse into one conductor in the centred-step layout; between 0 and 0.05 mm the production mesh cannot resolve the corner. The training data contain only valid geometries.',
+    validityText: 'Rule: clearance between strips > 0.05 mm. Below 0 the strips touch and the device is not a filter.',
     trusted: Surrogate.TRUSTED,
     plot: { fMin: 3, fMax: 7, dbMin: -60, dbMax: 0 },
     // Palace case record and commands (from build_case.py / run_queue.sh / collect.py)
@@ -452,11 +449,11 @@ async function loadDevice(id) {
   P = SUR.centre.slice();
   buildModelSeg(); buildSliders(); buildRefSel();
   const m = SUR.meta;
-  $('#boxNote').textContent = `Sampling box: ±30 % on widths and gaps, ±15 % on lengths around the tuned nominal. ${m.n_palace_samples} Palace samples (train ${m.n_train} / val ${m.n_val} / test ${m.n_test}); commit ${m.commit}.`;
+  $('#boxNote').textContent = `Box: ±30 % on widths and gaps, ±15 % on lengths. ${m.n_palace_samples} Palace solves.`;
   update();
   st.textContent = `Weights loaded (${Object.values(SUR.ensembles).reduce((a, e) => a + e.models.length, 0)} networks, ${m.format}). Tabulating the trunks…`;
   const ms = await SUR.prepareFastAsync((i, n) => { st.textContent = `Tabulating the trunks… ${i}/${n}`; });
-  st.className = 'status ok'; st.textContent = `Ready: ${timeQuery().toFixed(1)} ms per query (prior + 5 networks + metrics; tables built in ${(ms / 1e3).toFixed(1)} s).`;
+  st.className = 'status ok'; st.textContent = `Ready: ${timeQuery().toFixed(1)} ms per query.`;
   $('#findBtn').disabled = false;
   update();
 }
@@ -509,9 +506,9 @@ function renderGeom() {
   $('#geomOut').innerHTML = `<div><span>clearance</span><b class="${ok ? '' : 'bad'}">${c.toFixed(3)} mm</b><small>rule c &gt; ${DEV.cMin} mm</small></div>
     <div><span>distance to box edge</span><b class="${dist < 0.05 ? 'warn' : ''}">${dist.toFixed(3)}</b><small>0 = on an edge, 0.5 = centre</small></div>`;
   const msgs = [];
-  if (!ok) msgs.push(`<div class="msg e">Invalid geometry: clearance ${c.toFixed(3)} mm. ${c <= 0 ? 'The strips fuse into one conductor; this is not a coupled-line filter.' : 'The corner is closer than the production mesh can resolve.'} No training sample has this geometry.</div>`);
-  else if (c < 0.1) msgs.push(`<div class="msg w"><b>Marginal clearance</b> (${c.toFixed(3)} mm, below 0.1 mm): about one mesh element across the corner. The tuned nominal is in this band (0.061 mm).</div>`);
-  if (dist < 0.05) msgs.push(`<div class="msg w"><b>Near the box edge.</b> Fewer training samples here; expect larger error than the held-out mean.</div>`);
+  if (!ok) msgs.push(`<div class="msg e">Invalid geometry: clearance ${c.toFixed(3)} mm. ${c <= 0 ? 'The strips touch: this is not a filter.' : 'The gap is too small for the mesh.'} No training data here.</div>`);
+  else if (c < 0.1) msgs.push(`<div class="msg w"><b>Small clearance</b> (${c.toFixed(3)} mm). The mesh is coarse here.</div>`);
+  if (dist < 0.05) msgs.push(`<div class="msg w"><b>Near the box edge.</b> Expect a larger error.</div>`);
   $('#geomMsgs').innerHTML = msgs.join('');
 }
 function renderMetrics() {
@@ -600,7 +597,7 @@ function renderRef() {
   const f0err = 1e3 * (MET.f0 - r.palace.f0_centroid_GHz);
   h += `<tr><td>this page, ${esc(DEV.models.find(m => m.id === MODE).label)}</td><td>${(s / c).toFixed(2)} / ${mx.toFixed(2)} dB</td><td>${f0err >= 0 ? '+' : ''}${f0err.toFixed(1)} MHz</td><td>${r.palace.split_passband ? 'split' : ((MET.bw - r.palace.bw3dB_GHz) * 1e3 >= 0 ? '+' : '') + ((MET.bw - r.palace.bw3dB_GHz) * 1e3).toFixed(0) + ' MHz'}</td></tr></tbody>`;
   $('#refTbl').innerHTML = h;
-  $('#refNote').innerHTML = `${esc(r.id)}: ${esc(r.role)}. Palace f0 ${r.palace.f0_centroid_GHz.toFixed(3)} GHz, 3 dB BW ${(1e3 * r.palace.bw3dB_GHz).toFixed(0)} MHz${r.palace.split_passband ? ' (split passband)' : ''}, peak |S21| ${r.palace.peak_S21_dB.toFixed(2)} dB, clearance ${r.clearance_mm.toFixed(3)} mm${r.palace.wall_s ? `, solve ${(r.palace.wall_s / 60).toFixed(1)} min` : ''}${r.dist_to_edge != null ? `, distance to box edge ${r.dist_to_edge.toFixed(3)}` : ''}. The held-out rows are from the evaluation run (ensemble mean on the stored test predictions); the last row is recomputed here from the curve on screen.`;
+  $('#refNote').innerHTML = `${esc(r.id)}: ${esc(r.role)}. Palace f0 ${r.palace.f0_centroid_GHz.toFixed(3)} GHz, 3 dB BW ${(1e3 * r.palace.bw3dB_GHz).toFixed(0)} MHz${r.palace.split_passband ? ' (split passband)' : ''}, peak |S21| ${r.palace.peak_S21_dB.toFixed(2)} dB, clearance ${r.clearance_mm.toFixed(3)} mm${r.palace.wall_s ? `, solve ${(r.palace.wall_s / 60).toFixed(1)} min` : ''}${r.dist_to_edge != null ? `, distance to box edge ${r.dist_to_edge.toFixed(3)}` : ''}.`;
 }
 
 // ---------- verify in Palace ----------
@@ -635,7 +632,7 @@ function specMessages(spec) {
   if (spec.f0 < T.f0[0] || spec.f0 > T.f0[1]) w.push(`f0 outside ${T.f0[0]}–${T.f0[1]} GHz`);
   if (spec.bw < T.bw[0] || spec.bw > T.bw[1]) w.push(`BW outside ${T.bw[0]}–${T.bw[1]} GHz`);
   if (spec.rl > T.rlMax) w.push(`return loss above ${T.rlMax} dB`);
-  if (w.length) out.push(`<div class="msg w"><b>Outside the training data:</b> ${w.join('; ')}. The model is not trusted there; the search still runs, but the result needs a Palace check.</div>`);
+  if (w.length) out.push(`<div class="msg w"><b>Outside the training data:</b> ${w.join('; ')}. Check the result in Palace.</div>`);
   return out.join('');
 }
 for (const id of ['specF0', 'specBW', 'specRL', 'specRej']) $('#' + id).addEventListener('input', () => { $('#specMsgs').innerHTML = specMessages(readSpec()); });
