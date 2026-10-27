@@ -8,7 +8,7 @@
  "s_per_design": 0.5787,
  "designs_per_hour": 6220,
  "batch": 50,
- "out": "C:\\Users\\ben\\jobs\\rfsurrogates\\families\\edge_coupled_bpf\\data\\circuit\\circuit_physical_n500.npz",
+ "out": "families/edge_coupled_bpf/data/circuit/circuit_physical_n500.npz",
  "host_at_start": {
   "backend": "wsl",
   "distro": null,
