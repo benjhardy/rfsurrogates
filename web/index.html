@@ -142,10 +142,10 @@ footer.foot a { color: var(--muted); }
 <meta property="og:image" content="https://benjhardy.github.io/2026/filter-surrogate/filter-surrogate.png">
 <meta property="og:url" content="https://benjhardy.github.io/filter-surrogate/">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="https://benjhardy.github.io/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-<div class="topbar"><a class="home" href="/agent-rf/">&larr; agent.rf lab</a><button class="btn" id="themeBtn" type="button">Dark</button></div>
+<div class="topbar"><a class="home" href="https://benjhardy.github.io/agent-rf/">&larr; agent.rf lab</a><button class="btn" id="themeBtn" type="button">Dark</button></div>
 <main class="wrap">
   <header class="hero">
     <p class="eyebrow">Inverse design for passive devices &middot; rfsurrogates</p>
@@ -256,7 +256,7 @@ footer.foot a { color: var(--muted); }
 
   <section class="card pad" id="contribute" aria-label="Contribute data">
     <h2>Contribute data</h2>
-    <p class="note">You can solve designs on your own machine and send the results. A checker tests each result before it is used. Data contributions open with v0.2: see <a href="https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+    <p class="note">You can solve designs on your own machine and send the results. A checker tests each result before it is used. One command draws the designs, solves them, checks them and opens the pull request: <code>python tools/contribute.py go --n 20 --contributor &lt;your GitHub handle&gt;</code>. Palace runs by itself; for HFSS, CST or openEMS the tool exports the geometry and reads your Touchstone files back. Data contributions open with v0.2: see <a href="https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
   </section>
 
   <section class="grid2">
@@ -265,8 +265,8 @@ footer.foot a { color: var(--muted); }
       <ul class="links">
         <li><a href="https://github.com/benjhardy/rfsurrogates">rfsurrogates on GitHub</a>: code and data tools.</li>
         <li><a href="https://huggingface.co/rfsurrogates/edge-coupled-bpf">Model card and weights</a> (Hugging Face).</li>
-        <li><a href="/birdcage-builder/">Birdcage builder</a>: another Palace front end.</li>
-        <li><a href="/agent-rf/">agent.rf</a>: the lab hub.</li>
+        <li><a href="https://benjhardy.github.io/birdcage-builder/">Birdcage builder</a>: another Palace front end.</li>
+        <li><a href="https://benjhardy.github.io/agent-rf/">agent.rf</a>: the lab hub.</li>
         <li><a href="https://awslabs.github.io/palace/stable/">Palace</a>: the open-source FEM solver.</li>
       </ul>
     </div>
@@ -329,6 +329,8 @@ const DEVICES = {
     name: 'Edge-coupled microstrip BPF (RO4350B)',
     lede: 'Edge-coupled microstrip band-pass filter, 3&ndash;7 GHz, RO4350B (&epsilon;<sub>r</sub> 3.66, h 0.508 mm): a textbook coupled-line model plus a network trained on 261 Palace FEM solves. It gives |S21| and |S11| in about 2 ms in your browser. Simulated only.',
     weights: 'weights.json', refs: 'palace_refs.json',
+    // no local weights.json (it is not in git): load the published weights from the Hugging Face model repo
+    weightsRemote: 'https://huggingface.co/rfsurrogates/edge-coupled-bpf/resolve/main/weights.json',
     // UI parameters (the fixed substrate entries of p are shown, not edited); the box comes from weights.json
     params: [
       { key: 'w1', label: 'w₁', unit: 'mm', desc: 'strip width, outer sections (1, 4)' },
@@ -441,7 +443,8 @@ async function loadDevice(id) {
   const st = $('#loadStatus'); st.className = 'status'; st.textContent = 'Loading weights…';
   $('#findBtn').disabled = true;
   try {
-    const [w, r] = await Promise.all([fetch(DEV.weights).then(x => { if (!x.ok) throw new Error(DEV.weights + ' ' + x.status); return x.json(); }),
+    const getJson = u => fetch(u).then(x => { if (!x.ok) throw new Error(u + ' ' + x.status); return x.json(); });
+    const [w, r] = await Promise.all([getJson(DEV.weights).catch(e => DEV.weightsRemote ? getJson(DEV.weightsRemote) : Promise.reject(e)),
                                       fetch(DEV.refs).then(x => x.ok ? x.json() : null)]);
     SUR = Surrogate.load(w); REFS = r;
   } catch (e) { st.className = 'status bad'; st.textContent = 'Could not load the model: ' + e.message; return; }
