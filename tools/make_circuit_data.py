@@ -114,7 +114,7 @@ def main(argv=None) -> int:
     el = time.time() - t_start
     summary = {"family": a.family, "mode": a.mode, "n_requested": a.n, "n_ok": int(np.sum(np.isfinite(S21).all(1))),
                "n_failed": len(failed), "wall_s_total": round(el, 1), "s_per_design": round(el / a.n, 4),
-               "designs_per_hour": round(3600 * a.n / el), "batch": a.batch, "out": str(out), "host_at_start": host,
+               "designs_per_hour": round(3600 * a.n / el), "batch": a.batch, "out": out.relative_to(REPO).as_posix(), "host_at_start": host,
                "batches": batches}
     rec = registry.family_dir(a.family) / "results" / f"circuit_data_{a.mode}_n{a.n}.json"
     rec.write_text(json.dumps(summary, indent=1) + "\n")
