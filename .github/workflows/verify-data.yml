@@ -1,0 +1,51 @@
+name: verify data
+
+# Runs on every pull request that adds or changes files under incoming/ (a data contribution).
+# The verifier and the checker come from the BASE branch; the pull request only supplies the files to check.
+# So a pull request cannot change the rules it is checked against, and no code from it is run.
+
+on:
+  pull_request:
+    paths: ["incoming/**"]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Base branch (verifier, checker, family rules, data index)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+          persist-credentials: false
+
+      - name: Pull request files (read as data, never run)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install (the checker needs only numpy and scipy)
+        run: pip install "numpy>=2.0" "scipy>=1.12"
+
+      - name: Files changed by the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            --jq '.[].filename' > changed.txt
+          cat changed.txt
+
+      - name: Verify every batch
+        run: |
+          python base/tools/verify_batch.py --incoming pr/incoming --index-root base/data_index \
+            --changed-files changed.txt --summary "$GITHUB_STEP_SUMMARY"
