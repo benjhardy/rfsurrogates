@@ -7,6 +7,7 @@ torch>=2.3          # CPU build is enough: pip install torch --index-url https:/
 pytest>=8
 scikit-rf>=1.0      # tests/test_prior.py cross-checks the microstrip formulas
 pyyaml>=6.0         # tests/test_issue_templates.py reads the issue forms
+circuit-agent-tools @ git+https://github.com/benjhardy/circuit-agent-tools   # circuit tier of each family (Qucs-S/qucsator netlists, lint)
 # Data generation with the reference solver (only needed to build and collect Palace runs)
 gmsh>=4.11
 palace-agent-tools @ git+https://github.com/benjhardy/palace-agent-tools
