@@ -1,159 +1,110 @@
 # Contributing
 
-> **Status (v0.1, 2026-10-26): data contributions open with v0.2**, when the checker runs in CI on every data pull
-> request. Until then, the steps below are the plan and they work locally; please open an issue first if you want
-> to prepare data. Code issues and pull requests are welcome now.
+![How a contribution flows: solve on your machine, CI checks, the maintainer merges, the model is retrained](docs/img/contribute_process.png)
 
-This repo trains surrogate models of passive microwave devices from full-wave solves. The data comes from
-contributors who run a solver on their own machines. This page is the path from "I have a solver and some CPU time"
-to a merged pull request. The record you produce is defined in `docs/DATA_CONTRACT.md`, the fidelity rules are in
-`docs/FIDELITY.md`, and the project design is in `docs/OPEN_PROJECT.md`.
+There are three ways to help: solve designs, add a device family, or improve the code.
 
-## What it costs
+> **Status (v0.1, 2026-10-26):** data contributions open with v0.2, when the verifier runs on the main branch. You
+> can run the steps below now to practise with `--local`. Code issues and pull requests are welcome now.
+
+## Solve designs
+
+You run a solver on your own machine. One command does the rest.
+
+### What it costs
 
 Measured for `edge_coupled_bpf` on one 8-thread desktop (Palace 0.16 in Apptainer under WSL2, 25 GB):
 
-| fidelity | setup | per sample | peak RAM | notes |
-|---|---|---|---|---|
-| coarse (production) | mesh scale 1.8, order 2, 4 ranks, two jobs at a time | 11 min mean (7-24 min) | 2.0 GB mean, 2.5 GB max | about 258k unknowns; 9.7 min serial on 8 ranks |
-| medium (holdout) | scale 1.4, order 2, 8 ranks | about 15-20 min | about 3.9 GB | 470k-500k unknowns |
-| fine (reference) | scale 1.0, order 2, 8 ranks | 27.5 min | 8.7 GB | 1.12 M unknowns; solved once, for the nominal |
+| fidelity | setup | per solve | peak RAM per job |
+|---|---|---|---|
+| coarse (production) | mesh scale 1.8, order 2, 4 ranks, two jobs at a time | 11 min mean (7-24 min) | 2.0 GB mean, 2.5 GB max |
+| medium (holdout) | mesh scale 1.4, order 2, 8 ranks | about 15-20 min | about 3.9 GB |
 
-So a batch of 50 coarse samples is about 5 hours on a desktop with two jobs at a time. Other solvers cost what they
-cost; the record carries wall time and RAM.
+A batch of 50 coarse solves takes about 5 hours with two jobs at a time.
 
-## The path
+### Steps
 
-### (a) Pick or propose a device family
+1. **Set up.** Fork the repo, clone your fork, and install:
+   ```
+   python -m venv .venv && . .venv/bin/activate          # Windows: .venv\Scripts\activate
+   pip install torch --index-url https://download.pytorch.org/whl/cpu
+   pip install -r requirements.txt
+   ```
+   For Palace, put `palace` on PATH or set `PALACE_SIF` to a Palace Apptainer image. Any other launch command works
+   with `--runner "<command>"`; it is called as `<command> config.json <ranks>`. On Windows, add `--wsl <distribution>`.
 
-The registered families are in `families.json`. Today there is one: `edge_coupled_bpf`, the edge-coupled microstrip
-band-pass filter on RO4350B, p = (w1, w2, g1, g2, l1, l2, eps_r, h) in mm; box and design list in
-`families/edge_coupled_bpf/samples.json`.
+2. **Draw and claim designs.**
+   ```
+   python tools/contribute.py go --n 20 --contributor <your GitHub handle> --open-claim
+   ```
+   The tool draws 20 valid designs from the family box, prints the cost estimate and opens a claim issue. Without
+   `--open-claim` it writes the claim text to `work/<batch>/claim.md` for you to post. The maintainer checks the
+   claim and adds the label `status:accepted`.
 
-To propose a family, open an issue with: the device, the parameter vector and its box, the analytic prior you would
-use (a textbook reference is enough), the validity rule (which geometries are not the device), the frequency grid,
-the port definition, and the metrics that define "good" for that device. Next on the roadmap: the hairpin
-band-pass filter.
+3. **Solve and check.** After the claim is accepted:
+   ```
+   python tools/contribute.py go --batch <batch> --budget-hours 4 --jobs 2
+   ```
+   The tool builds each case, solves it, collects the result and checks it. You set the budget: it starts no solve
+   that would go past it. Stop it at any time with a file named `STOP` in `work/<batch>/`. Run the same command again
+   to continue.
 
-### (b) Draw designs from the family's box
+4. **Open the pull request.** When every design is finished, `go` stages the files in `incoming/<family>/<batch>/`.
+   ```
+   python tools/contribute.py submit --batch <batch> --open-pr
+   ```
+   This commits with a sign-off, pushes the branch `data/<batch>` to your fork and opens one pull request. Without
+   `--open-pr` it prints the git commands.
 
-Designs must come from the documented box and pass the validity rule, so that the data stays a sample of one
-well-defined set. Use the family's own sampler:
+With an AI coding agent, ask it to use the `contribute-data` skill. It runs these steps and asks you at each gate.
 
-```
-cd families/edge_coupled_bpf
-python design.py --extend 300 10        # annotates every design with clearance/valid and draws new valid ones
-                                        # (Latin hypercube in the box, rejection-sampled on the clearance rule)
-```
-
-Or check one design of your own against the rule before you solve it (from the repo root):
-
-```
-python -c "import registry; f = registry.load_family('edge_coupled_bpf'); p = [0.9, 1.1, 0.18, 0.6, 8.5, 8.5, 3.66, 0.508]; print(f['clearance'](p), f['is_valid'](p))"
-```
-
-The rule for this family is `clearance(p) > 0.05 mm` with
-`clearance = min(g1 - max(0, (w2 - w1)/2), g2 - max(0, (w1 - w2)/2), g1 - max(0, (W50 - w1)/2))`. A design that
-fails it is a shorted device (fused copper), not a filter. Do not solve it; the checker rejects it anyway.
-
-To reserve ids so that two contributors do not solve the same designs, open an issue
-"claim: edge_coupled_bpf sNNNN-sMMMM", or state the seed you gave `design.py --extend`.
-
-### (c) Run the solver on your machine
-
-**Palace (the reference solver).** The generator writes the mesh and the config; the geometry gate runs before any
-solve:
+### Other solvers (HFSS, CST, openEMS, ...)
 
 ```
-cd families/edge_coupled_bpf
-python build_case.py --id s0601 --scale 1.8 --tol 1e-2 --sweep narrow          # by id from samples.json
-python build_case.py --p 0.9 1.1 0.18 0.6 8.5 8.5 3.66 0.508 --name my_run --scale 1.8 --tol 1e-2 --sweep narrow
-#   -> runs/<name>/<name>.msh, config.json, build_summary.json (tets, unknowns, conductor counts)
-#   exit code 3 and no config.json when the gate rejects the layout
+python tools/contribute.py go --n 20 --contributor <handle> --solver hfss --solver-version <version>
 ```
 
-`--scale 1.8 --tol 1e-2 --sweep narrow` is the production (coarse) setting (`prod_build_args.txt`); `--scale 1.4`
-is the medium holdout setting (`holdout_build_args.txt`). Then solve with Palace 0.16 (`palace -np 4 config.json`
-or your own wrapper) and collect:
+After the claim is accepted, `go` writes the geometry of each design to `work/<batch>/geometry/` as JSON and DXF,
+with instructions in `work/<batch>/EXTERNAL_SOLVER.md`. Solve each design and save a two-port Touchstone file as
+`work/<batch>/touchstone/<id>.s2p`. Then run `go --batch <batch> --mesh-elements N --mesh-unknowns N` again.
 
-```
-cd runs/my_run && /usr/bin/time -v palace -np 4 config.json > palace.log 2> time.log && cd ../..
-python collect.py --run my_run --ranks 4        # -> data/aux/my_run.npz (sNNNN ids go to data/palace)
-```
+Records from another solver form the fidelity group `other`. The project publishes no accuracy comparison per solver
+or between solvers. You are responsible for what your solver licence allows you to share.
 
-`run_queue.sh` runs a list of ids unattended (one job per line, `par: a 4, b 4` for two at a time; stops when a
-`STOP` file exists) and calls `collect.py` after each run. `collect.py` writes the npz on the 3-7 GHz / 0.02 GHz
-grid with the solver statistics read from the logs.
+### Verdicts
 
-**Other solvers (openEMS, Elmer, MEEP, HFSS, CST, FEKO, ...).** Build the same geometry: `build_case.layout(p)`
-returns every copper rectangle and the feed positions; the stack is substrate (eps_r, h, tan d) on a PEC ground,
-copper as a zero-thickness PEC sheet, 50 ohm feeds of width W50 = 1.112 mm and length 3 mm, ports de-embedded to the
-start of the coupled section. Export a two-port Touchstone file (`.s2p`, any unit, RI / MA / DB) on any grid that
-covers 3-7 GHz; the checker resamples it to the family grid. Write down the solver version, the mesh size (cells or
-elements, unknowns), the element order if FEM, and the port type.
+Every record gets one verdict from `contrib/check_sample.py`. `contrib/README.md` lists every check.
 
-Commercial solvers: you are responsible for what your solver licence allows you to share. The project does not
-publish accuracy comparisons per solver or between solvers. Records from any solver other than the reference setup
-are grouped as fidelity `other` and measured only against the family's Palace holdouts (`docs/FIDELITY.md`).
+| verdict | meaning | what you do |
+|---|---|---|
+| PASS | the record meets the contract | nothing |
+| NEEDS REVIEW | physically fine, but a reviewer must look (for example far from the prior) | add one sentence on why, in `review_notes` in `work/<batch>/batch.json` |
+| FAIL | schema, box, validity rule, passivity, reciprocity or provenance fails | nothing: it is not submitted |
 
-### (d) Run the checker; it also writes the contract record
+### What happens to your pull request
 
-```
-python contrib/check_sample.py families/edge_coupled_bpf/data/palace/s0601.npz --family edge_coupled_bpf \
-    --contributor <github handle> --licence CC-BY-4.0 --out rows/s0601.json --write-npz samples/s0601.npz
+1. **CI** (`tools/verify_batch.py`) reruns the checker on every record with the rules of the main branch. It also
+   checks the file hashes, duplicates against the data index, and that the pull request changes only `incoming/`.
+2. **A reviewer** reads the NEEDS REVIEW sentences. For a new solver or a new contributor, the maintainer solves one
+   design again with Palace and notes the difference on the pull request. A large difference does not reject the
+   batch; the batch becomes its own fidelity group.
+3. **After the merge**, the maintainer uploads the records to the Hugging Face dataset `rfsurrogates/samples` and adds
+   the rows to the data index (`tools/ingest_batch.py`).
+4. **Retraining** happens per release, when a family has about 25 % more records or a new fidelity group.
 
-python contrib/check_sample.py my_run.s2p --family edge_coupled_bpf \
-    --p 0.9 1.1 0.18 0.6 8.5 8.5 3.66 0.508 \
-    --solver openems --solver-version 0.0.36 --fidelity other \
-    --mesh-elements 2400000 --mesh-unknowns 2400000 --order 0 \
-    --port "lumped 50 ohm port at the feed end, 3 mm feed de-embedded" \
-    --contributor <github handle> --licence CC-BY-4.0 \
-    --out rows/my_run.json --write-npz samples/my_run.npz
-```
+### Credit
 
-Then run the checker once more on the written contract npz (`samples/<id>.npz`): that row, with the sha256 of the
-file you submit, is the one that goes into the pull request.
+Every record names its contributor. Each model card lists the contributors with their record counts and fidelity
+groups. Releases name the data index version they were trained on.
 
-Verdicts: `PASS` (exit 0), `NEEDS REVIEW` (exit 2: physically fine but far from the prior, asymmetric, out of box
-with `--allow-out-of-box`, or missing mesh statistics / licence), `FAIL` (exit 1: schema, box, validity rule, NaN,
-passivity, reciprocity or missing provenance). `contrib/README.md` lists every check and threshold. A `FAIL` is not
-negotiable; a `NEEDS REVIEW` needs one sentence from you on why the sample looks the way it does.
+## Add a device family
 
-### (e) Submit
+Open an issue with the family form. Give the device, the parameter vector and its box, an analytic prior (a textbook
+reference is enough), the validity rule, the frequency grid, the ports and the metrics. The hairpin band-pass filter
+is next. A family folder holds the definition only; see `families/edge_coupled_bpf/` and the hooks in its `family.py`.
 
-1. **Files**: open a pull request on the Hugging Face dataset `rfsurrogates/samples` that adds your contract npz
-   files under `<family_id>/palace/` (or `holdout/` for finer-mesh records, see `docs/FIDELITY.md`).
-2. **Rows**: open a pull request here that appends your rows to `data_index/<family_id>/manifest.jsonl` (one JSON
-   object per line, as the checker wrote them, plus `"split"` and `"path"`), with a link to the dataset pull request.
-   Title: `data: <family_id>, N samples, <solver> <fidelity>`.
-3. Add one paragraph on your setup: machine, solver build, anything that differs from the generator's layout.
+## Improve the code
 
-If you cannot use Hugging Face, open an issue with the rows attached and a link to the files (a release asset or a
-Zenodo record you own).
-
-### (f) What reviewers check
-
-- The checker verdict of every row, rerun on the submitted files; `file_sha256` and `content_sha256` must match.
-- Mesh statistics against the fidelity tag; port definition against the family's; frequency coverage.
-- Duplicates: the same `content_sha256`, or the same p as an existing row.
-- For a new solver or a new contributor: one of the designs is solved again with Palace at the production setting
-  and compared (passband |S21|, f0, BW); the result is noted on the pull request. A large difference does not reject
-  the batch; it is recorded and the batch becomes a separate fidelity group.
-- The licence field (CC-BY-4.0 for the dataset).
-
-### (g) Credit
-
-Every row carries `contributor`. The model card of each family lists the contributors with their record counts and
-fidelity groups, and the data index is the record of who computed what. Releases list the data index version they
-were trained on.
-
-## Retraining
-
-Merged data does not retrain anything by itself. A maintainer retrains a family locally and cuts a release (weights,
-regenerated model card, data index version) when the family has about 25 % more records or a new fidelity group.
-
-## Code contributions
-
-Code (a new family, a prior, a checker improvement) follows the usual path: an issue first for anything beyond a
-fix, tests next to the code (`python -m pytest tests -q`), no change to training code in a data pull request. Sign
-off your commits with a Developer Certificate of Origin line (`git commit -s`).
+Open an issue first for anything beyond a small fix. Put tests next to the code and run `python -m pytest tests -q`.
+Do not change training code in a data pull request. Sign off your commits (`git commit -s`, Developer Certificate of
+Origin).

@@ -78,3 +78,33 @@ DeepONet forward pass; `weights.json` (from the Hugging Face model repo, or `cor
 stage-B and 5 scratch seeds. A visitor sets the geometry inside the box, sees S11 and S21 with the seed spread,
 compares with stored Palace curves, and runs inverse design. `web/check_port.mjs` checks the port against Python
 (prior to 1e-9, ensemble to 1e-4 dB).
+
+## The model
+
+S = S_prior + DeepONet(p, f). Stage A pretrains the network on samples of the prior; stage B fine-tunes it on
+solver data. A DeepONet without the prior is trained on the same data as a baseline. Each release has 5 seeds of
+each. The trained models are per family; a model shared across families is the v0.3 research question.
+
+## Repo layout
+
+| path | content |
+|---|---|
+| `families.json`, `registry.py` | the device-family registry |
+| `coverage.json` | the coverage map: device types, building blocks, status (`tools/make_coverage.py` writes `docs/COVERAGE.md` and `web/coverage.json`) |
+| `families/<family_id>/` | generator, prior, box (`samples.json`), validity rule (`family.py`), results, figures, model card |
+| `core/` | data loader, network, trainer, evaluation, inverse design, prediction from checkpoints, web export |
+| `contrib/check_sample.py` | the checker every record goes through |
+| `data_index/<family_id>/manifest.jsonl` | one row per record: provenance, checks, hashes |
+| `tools/` | records from solver output, model card, Hugging Face staging and fetch |
+| `web/` | the browser page: a dependency-free JavaScript port of the prior and the network, and `rfscene.js`, a reusable 3D view of layered devices (`web/README.md`) |
+| `docs/` | data contract, fidelity policy, project design, coverage, agent roles (draft), experiment reports |
+
+## Reproduce the published metrics
+
+After `python tools/fetch.py` (see the README):
+
+```
+python core/inverse.py --list-box                     # the design box and the range the data covers
+python core/predict.py && python core/eval.py         # rebuild the held-out metrics from the weights
+python -m pytest tests -q
+```

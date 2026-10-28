@@ -27,7 +27,7 @@ from pathlib import Path
 
 import numpy as np
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1]     # the family folder (this script is in experiments/)
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / "core"))
 sys.path.insert(0, str(HERE))

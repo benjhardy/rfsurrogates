@@ -2,6 +2,7 @@
 
 The section and topology checks are pure Python. The qucsator check skips when circuit-agent-tools or the
 simulator is not available (set CIRCUIT_TOOLS_SKIP_SIM=1 to skip it on purpose)."""
+import importlib.util
 import json
 import os
 
@@ -42,6 +43,8 @@ def test_section_s4_matches_prior_section():
 def test_spec_topology(tmp_path):
     counts = {"physical": {"mcline": 4, "mopen": 8, "mstep": 4}, "sblock": {"sblock": 4, "mopen": 8, "mstep": 4},
               "sblock_mlin": {"sblock": 4, "mline": 8}, "prior_blocks": {"sblock": 4}}
+    if importlib.util.find_spec("circuit_tools") is None:      # the S-block modes write Touchstone blocks with it
+        counts = {"physical": counts["physical"]}
     for mode, want in counts.items():
         sp = circuit.spec(P_NOM, mode, f_ghz=F, block_dir=tmp_path / mode)
         got = {}

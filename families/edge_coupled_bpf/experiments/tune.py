@@ -27,8 +27,10 @@ from pathlib import Path
 import numpy as np
 from scipy.optimize import least_squares
 
-HERE = Path(__file__).resolve().parent
+EXP = Path(__file__).resolve().parent          # experiments/: this script, its inputs and its logs
+HERE = EXP.parent                              # the family folder: runs/, data/, figs/, samples.json
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(EXP))
 import build_case  # noqa: E402
 import collect  # noqa: E402
 import design  # noqa: E402
@@ -36,7 +38,7 @@ import prior  # noqa: E402
 
 def _queue_cmd() -> list:
     """bash run_queue.sh queue_tune.txt; on Windows set RFS_WSL_DISTRO (e.g. Ubuntu-24.04) to run it inside WSL."""
-    sh, q = HERE / "run_queue.sh", HERE / "queue_tune.txt"
+    sh, q = EXP / "run_queue.sh", HERE / "queue_tune.txt"
     distro = os.environ.get("RFS_WSL_DISTRO")
     if not distro:
         return ["bash", str(sh), str(q)]
@@ -48,7 +50,7 @@ def _queue_cmd() -> list:
 
 WSL = _queue_cmd()
 SETTINGS = dict(scale=1.8, tol=1e-2, samples=build_case.SAMPLES_NARROW, order=2)
-LOG = HERE / "tune_log.json"
+LOG = EXP / "tune_log.json"
 DAMP = 0.8                      # space-mapping step damping
 EXTRACT_SPAN = 0.5              # +-50 % bounds for the parameter extraction
 
@@ -108,8 +110,8 @@ def main():
     ap.add_argument("--rl", type=float, help="return-loss target (dB) for the stop rule")
     a = ap.parse_args()
     global LOG
-    LOG = HERE / a.log
-    d = json.loads((HERE / a.design).read_text())
+    LOG = EXP / a.log
+    d = json.loads((EXP / a.design if (EXP / a.design).exists() else HERE / a.design).read_text())
     p_star = list(d["nominal"]["p"])                         # prior-optimal (equiripple in the prior)
     target = d["nominal"]["prior_features"]                   # lossy prior features at p_star
     log = {"settings": {k: (v if not isinstance(v, list) else v) for k, v in SETTINGS.items()}, "p_star": p_star,
