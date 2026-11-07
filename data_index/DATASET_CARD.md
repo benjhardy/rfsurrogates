@@ -22,8 +22,7 @@ Give RF engineers open simulation data, tested surrogate models and the know-how
 - All records so far come from one contributor.
 - Records are simulated. Nothing has been measured.
 - Measured validation is a plan with no date.
-- Data contributions start with a small pilot of invited people, after the v0.2 release.
-- v0.2 is not released yet.
+- Data contributions start with a small pilot of invited people.
 - How to contribute: [CONTRIBUTING.md](https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md).
 
 ## Records

@@ -5,8 +5,8 @@
 There are three ways to help: solve designs, add a device family, or improve the code. The project needs new device
 families, other solvers and independent checks.
 
-> **Status (v0.1, 2026-10-26):** v0.2 is not released yet. It means the contributor path and the checker in CI on the
-> main branch. Data contributions start with a small pilot of invited people. Anyone can practise now: run the steps
+> **Status (v0.2, 2026-11-07):** the contributor path and the checker in CI are on the main branch. Data contributions
+> start with a small pilot of invited people. Anyone can practise now: run the steps
 > below with `--local`. A `--local` batch needs no claim and cannot be submitted. Code issues and pull requests are
 > welcome now.
 
