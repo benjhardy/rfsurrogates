@@ -66,11 +66,11 @@ few dozen samples if it has a prior, and both variants are trained and published
 
 ## Roadmap
 
-Everything after v0.1 is a plan, not a commitment. v0.2 is not released yet. No lesson exists yet.
+Everything after v0.2 is a plan, not a commitment. No lesson exists yet.
 
-1. **v0.1** (done locally): repo, registry, checker, records and manifest, weights and model card, staging and
+1. **v0.1** (done, 2026-10-26): repo, registry, checker, records and manifest, weights and model card, staging and
    fetch tools, browser page.
-2. **v0.2 and the pilot**: the contributor path and the checker in CI on the main branch (download the submitted
+2. **v0.2 and the pilot** (v0.2 done, 2026-11-07; pilot next): the contributor path and the checker in CI on the main branch (download the submitted
    files, compare the hashes, rerun the verdicts). Data contributions start with a small pilot of invited people.
    Anyone can practise now with `--local`.
 3. **A first interactive lesson.**

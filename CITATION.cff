@@ -7,8 +7,8 @@ authors:
     given-names: Benjamin
 license: Apache-2.0
 repository-code: "https://github.com/benjhardy/rfsurrogates"
-version: 0.1.0
-date-released: 2026-10-26
+version: 0.2.0
+date-released: 2026-11-07
 keywords:
   - RF
   - microwave

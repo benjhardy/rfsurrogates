@@ -19,7 +19,7 @@ engineers ML by working on devices they understand.
 
 ## Status
 
-v0.1, 2026-10-26. One device family, data from one contributor.
+v0.2, 2026-11-07. One device family, data from one contributor.
 
 | family | training data | held-out passband \|S21\| error |
 |---|---|---|
@@ -28,8 +28,8 @@ v0.1, 2026-10-26. One device family, data from one contributor.
 The model is checked against simulation only. Nothing here was measured. Hardware validation is on the roadmap, with
 no date. The limits are in the [model card](families/edge_coupled_bpf/MODEL_CARD.md).
 
-v0.2 is not released yet. It means the contributor path and the checker in CI on the main branch. Data contributions
-start with a small pilot of invited people. Anyone can practise now with `--local`.
+v0.2 puts the contributor path and the checker in CI on the main branch. Data contributions start with a small pilot
+of invited people. Anyone can practise now with `--local`.
 
 ## Try it
 
