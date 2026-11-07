@@ -23,7 +23,7 @@ Parameter vector p = (w1, w2, g1, g2, l1, l2, eps_r, h), lengths in mm:
 | l2 | coupled length of sections 2, 3 | 8.6560 | +-15 % |
 | eps_r, h | substrate | 3.66, 0.508 | fixed |
 
-The box centre is the Palace-tuned nominal (space mapping, `tune.py`, `tune_log.json`: gaps 43 % / 11 % wider
+The box centre is the Palace-tuned nominal (space mapping, `experiments/tune.py`, `experiments/tune_log.json`: gaps 43 % / 11 % wider
 than the prior's and sections about 2 % shorter). `samples.json` carries the centre, the box, every design point
 with its clearance and validity, and the frequency grid.
 
@@ -89,8 +89,8 @@ to -1.4 % against a converged answer; the 10 medium-mesh holdouts measure what t
 | `design.py` | Pozar synthesis -> p, prior-level equiripple tune, sampling box, LHS sampler -> `design.json`, `samples.json`; `--extend` adds valid designs; `--stage-a` writes `data/prior_stageA.npz` (20,000 prior samples, 3 substrates) |
 | `build_case.py` | p -> Gmsh mesh (OCC, size fields at the copper edges) + Palace config + geometry gate; `--id` from `samples.json` or `--p` for any design |
 | `collect.py` | Palace `port-S.csv` + logs -> `data/<split>/<id>.npz` with p, f, S11, S21, raw points, wall time, peak RAM, mesh statistics; `--db` adds an rflab run record |
-| `run_queue.sh` | unattended Palace queue (one job per line, `par:` for concurrent jobs, `STOP` file) |
-| `tune.py` | space-mapping tune of the nominal in Palace (prior = coarse model, Palace = fine model) |
+| `circuit.py` | the circuit tier: a qucsator circuit of the `build_case` layout (`docs/CIRCUIT_TIER.md`) |
+| `experiments/` | maintainer studies, not needed to contribute: `tune.py` (space-mapping tune of the nominal in Palace), `rl20_batch.py` (the 20 dB return-loss batch), `circuit_eval.py` (circuit tier against Palace), `plot_rl20.py`, `run_queue.sh` (unattended Palace queue, `par:` for concurrent jobs, `STOP` file in this folder) |
 | `results/`, `figs/` | metrics, learning curve, fidelity holdouts, figures (`figs/INDEX.md`) |
 
 ## Commands
@@ -99,11 +99,11 @@ to -1.4 % against a converged answer; the 10 medium-mesh holdouts measure what t
 cd families/edge_coupled_bpf
 python design.py --extend 300 10                                 # more valid designs in samples.json
 python build_case.py --id s0601 --scale 1.8 --tol 1e-2 --sweep narrow
-RUN_PALACE=run_palace bash run_queue.sh queue.txt                 # or run Palace yourself in runs/<id>/
+RUN_PALACE=run_palace bash experiments/run_queue.sh queue.txt     # or run Palace yourself in runs/<id>/
 python collect.py --run s0601 --ranks 4
 python ../../contrib/check_sample.py data/palace/s0601.npz --contributor <handle>
 ```
 
 `build_case.py` and `collect.py` need gmsh and `palace-agent-tools` (`pip install -r requirements.txt`; set
-`PALACE_AGENT_TOOLS` to use a local checkout instead). `run_queue.sh` runs under Linux or WSL; set `RFS_PYTHON` to
+`PALACE_AGENT_TOOLS` to use a local checkout instead). `experiments/run_queue.sh` runs under Linux or WSL; set `RFS_PYTHON` to
 the Python that has those packages and `RUN_PALACE` to a command that takes `config.json <ranks>`.

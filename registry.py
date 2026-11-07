@@ -24,6 +24,11 @@ import numpy as np
 REPO = Path(__file__).resolve().parent
 FAMILIES_JSON = REPO / "families.json"
 DEFAULT_FAMILY = "edge_coupled_bpf"
+HOOKS = ("sample_designs", "build", "collect", "export_geometry")   # optional, used by tools/contribute.py
+
+
+class GateReject(RuntimeError):
+    """A family generator refused a layout before any solve (its geometry gate)."""
 
 
 @lru_cache(maxsize=1)
@@ -78,4 +83,8 @@ def load_family(family_id: str | None = None) -> dict:
     e["validity"] = mod.validity()
     for fn in ("clearance", "is_valid", "prior", "passband_metrics"):
         e[fn] = getattr(mod, fn)
+    for fn in HOOKS:
+        if hasattr(mod, fn):
+            e[fn] = getattr(mod, fn)
+    e["solver_defaults"] = {"palace": {"port": getattr(mod, "PORT_PALACE", None), "order": 2}}
     return e

@@ -15,3 +15,5 @@ families/*/queue*.txt
 # generated for the browser page by core/export_web.py (published with the weights)
 web/weights.json
 web/check_ref.json
+# contributor batches (tools/contribute.py): case folders, logs and records before submit
+work/

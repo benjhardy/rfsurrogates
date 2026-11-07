@@ -71,8 +71,11 @@ def metrics(f, s11, s21):
     return out
 
 
-def collect(run: str, ranks: int | None = None, record: bool = False):
-    d = HERE / "runs" / run
+def collect(run: str, ranks: int | None = None, record: bool = False, run_dir: Path | None = None,
+            out_npz: Path | None = None):
+    """run_dir / out_npz: a case folder and an output file anywhere (tools/contribute.py); default runs/<run> and
+    data/<split>/<run>.npz by the run-name pattern."""
+    d = Path(run_dir) if run_dir else HERE / "runs" / run
     summ = json.loads((d / "build_summary.json").read_text())
     csv = d / "output" / "port-S.csv"
     if not csv.exists():
@@ -108,8 +111,10 @@ def collect(run: str, ranks: int | None = None, record: bool = False):
             "holdout_coarse" if HOLDC.match(run) else "inverse" if INV.match(run) else "study")
     out_dir = HERE / "data" / {"production": "palace", "holdout": "holdout", "holdout_coarse": "holdout_coarse",
                                "inverse": "inverse_check", "study": "aux"}[kind]
+    if out_npz:
+        out_dir = Path(out_npz).parent
     out_dir.mkdir(parents=True, exist_ok=True)
-    npz = out_dir / f"{run}.npz"
+    npz = Path(out_npz) if out_npz else out_dir / f"{run}.npz"
     np.savez_compressed(npz, p=np.asarray(p, float), f=f.astype(np.float64), S11=s11.astype(np.complex128),
                         S21=s21.astype(np.complex128), f_raw=f_raw, S11_raw=s11_raw, S21_raw=s21_raw,
                         wall_s=float(wall or np.nan), ranks=int(ranks or 0), substrate=sub, run=run,

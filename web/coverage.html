@@ -132,7 +132,7 @@ footer.foot a { color: var(--muted); }
 </style>
 <title>Surrogate Coverage Map</title>
 <meta name="description" content="Which passive microwave device types have a surrogate model in rfsurrogates, which are planned, and which building blocks they share.">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="https://benjhardy.github.io/favicon.svg" type="image/svg+xml">
 </head>
 <body>
 <div class="topbar"><a class="home" href="https://github.com/benjhardy/rfsurrogates">&larr; rfsurrogates</a><button class="btn" id="themeBtn" type="button">Dark</button></div>
@@ -232,7 +232,7 @@ function renderSummary() {
   $('#sumbar').innerHTML = Object.keys(COV.device_status).map(s => n[s] ? `<span style="width:${100 * n[s] / devs.length}%;background:var(${STATUS_VAR[s]});opacity:${s === 'open' ? 0.35 : 1}"></span>` : '').join('');
   $('#sumbar').setAttribute('aria-label', Object.keys(n).map(s => `${n[s]} ${s}`).join(', ') + ` of ${devs.length} device types`);
   $('#sumkey').innerHTML = Object.keys(COV.device_status).map(s => `<span><i class="mk s-${s}"></i><b>${n[s]}</b> ${s}</span>`).join('') + `<span>${COV.blocks.length} building blocks</span>`;
-  $('#lede').textContent = `${devs.length} passive microwave device types, the ${COV.blocks.length} building blocks they are made of, and which ones have a surrogate model. ${n.surrogate} has a published surrogate, ${n.planned} is planned, ${n.experiment} is an experiment, and ${n.open} are open for proposals.`;
+  $('#lede').textContent = `${devs.length} passive microwave device types, the ${COV.blocks.length} building blocks they are made of, and which ones have a surrogate model. ${n.surrogate} has a published surrogate, ${n.planned} ${n.planned === 1 ? 'is' : 'are'} planned, ${n.experiment} is an experiment, and ${n.open} are open for proposals.`;
   $('#keyDev').innerHTML = '<span class="lbl">Device status</span>' + Object.entries(COV.device_status).map(([s, t]) => `<div><i class="mk s-${s}"></i><b>${s}</b><span>${esc(t)}</span></div>`).join('');
   $('#keyBlk').innerHTML = '<span class="lbl">Block status</span>' + Object.entries(COV.block_status).map(([s, t]) => `<div><i class="mk sq b-${s}"></i><b>${s}</b><span>${esc(t)}</span></div>`).join('');
   $('#keyRoute').innerHTML = '<span class="lbl">Routes</span>' + Object.entries(COV.routes).map(([s, t]) => `<div><b>${s}</b><span>${esc(t)}</span></div>`).join('');

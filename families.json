@@ -24,6 +24,10 @@
     "fine": "Palace 0.16, mesh scale 1.0, order 2 (reference, nominal only)",
     "other": "any other solver or setup; mesh statistics and port definition required"
    },
+   "cost": {
+    "coarse": {"minutes_per_solve": 11, "ranks": 4, "peak_ram_gb": 2.5, "source": "CONTRIBUTING.md: 11 min mean per 4-rank job, two jobs at a time, 8-thread desktop"},
+    "medium": {"minutes_per_solve": 18, "ranks": 8, "peak_ram_gb": 3.9, "source": "CONTRIBUTING.md: about 15-20 min on 8 ranks"}
+   },
    "production_fidelity": "coarse",
    "holdout_fidelity": "medium",
    "hf_model": "rfsurrogates/edge-coupled-bpf",

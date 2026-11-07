@@ -87,6 +87,20 @@ request. It contains every metadata field above, plus: `id`, `source_file`, `fil
 `path` (`<family_id>/<folder>/<file>.npz` in the dataset repo). Example: run
 `python contrib/check_sample.py families/edge_coupled_bpf/data/palace/nominal.npz --json`.
 
+## A contributed batch
+
+`tools/contribute.py` stages one batch for a data pull request as `incoming/<family_id>/<batch_id>/`:
+
+| file | content |
+|---|---|
+| `batch.json` | schema `rfsurrogates.batch/1`: batch id, family, contributor, licence, sampler seed, solver (name, version, fidelity, order, port), claim issue, setup notes, a sentence per NEEDS REVIEW record, and every design with its state and verdict |
+| `rows.jsonl` | one manifest row per submitted record, plus `batch_id`; `path` is `<family_id>/contrib/<batch_id>/<id>.npz` |
+| `records/<id>.npz` | the contract npz of each PASS and NEEDS REVIEW record |
+
+CI (`tools/verify_batch.py`) checks the batch. After the merge, `tools/ingest_batch.py` uploads the records to the
+dataset repo, appends the rows to the manifest, keeps `batch.json` as `data_index/<family_id>/batches/<batch_id>.json`
+and removes the `incoming/` folder.
+
 ## Content hash
 
 `content_sha256` = SHA-256 over, in this order, as little-endian float64 bytes: `p` rounded to 1e-9; `f` in GHz

@@ -4,7 +4,7 @@
 
 Which passive devices have a surrogate, which are planned, and which building blocks they share. Interactive map: `web/coverage.html`. To propose a device, see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-31 device types: 1 surrogate, 1 planned, 1 experiment, 28 open.
+31 device types: 1 surrogate, 0 planned, 1 experiment, 29 open.
 
 | status | meaning |
 |---|---|
@@ -18,25 +18,15 @@ Which passive devices have a surrogate, which are planned, and which building bl
 ```mermaid
 flowchart LR
   edge_coupled_bpf["Edge-coupled BPF<br/><i>surrogate</i>"]:::surrogate
-  hairpin_bpf["Hairpin BPF<br/><i>planned</i>"]:::planned
   stepped_lpf["Stepped-impedance LPF<br/><i>experiment</i>"]:::experiment
   line(["Uniform line<br/><i>experiment</i>"]):::blk_experiment
   open_end(["Open end<br/><i>textbook</i>"]):::blk_textbook
   width_step(["Width step<br/><i>experiment</i>"]):::blk_experiment
-  u_bend(["U-bend<br/><i>none</i>"]):::blk_none
-  tee(["T-junction<br/><i>textbook</i>"]):::blk_textbook
   coupled_pair(["Coupled-line pair<br/><i>textbook</i>"]):::blk_textbook
-  mtl(["N-conductor lines<br/><i>none</i>"]):::blk_none
   edge_coupled_bpf --> line
   edge_coupled_bpf --> coupled_pair
   edge_coupled_bpf --> open_end
   edge_coupled_bpf --> width_step
-  hairpin_bpf --> coupled_pair
-  hairpin_bpf --> mtl
-  hairpin_bpf --> u_bend
-  hairpin_bpf --> tee
-  hairpin_bpf --> open_end
-  hairpin_bpf --> line
   stepped_lpf --> line
   stepped_lpf --> width_step
   classDef surrogate fill:#2A7F50,color:#fff,stroke:#2A7F50
@@ -53,7 +43,7 @@ flowchart LR
 | group | device | status | routes | blocks | outputs |
 |---|---|---|---|---|---|
 | Filters | [Edge-coupled BPF](../families/edge_coupled_bpf/README.md) | surrogate | family, compose | Uniform line, Coupled-line pair, Open end, Width step | S11, S21 |
-| Filters | Hairpin BPF | planned | family, compose | Coupled-line pair, N-conductor lines, U-bend, T-junction, Open end, Uniform line | S11, S21 |
+| Filters | Hairpin BPF | open | family, compose | Coupled-line pair, N-conductor lines, U-bend, T-junction, Open end, Uniform line | S11, S21 |
 | Filters | Stepped-impedance LPF | experiment | compose | Uniform line, Width step | S11, S21 |
 | Filters | Open-stub LPF | open | compose | Uniform line, T-junction, Open end, Width step | S11, S21 |
 | Filters | Stub band-stop | open | compose | Uniform line, T-junction, Open end | S11, S21 |

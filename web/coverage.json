@@ -358,7 +358,7 @@
    "id": "hairpin_bpf",
    "label": "Hairpin BPF",
    "group": "filters",
-   "status": "planned",
+   "status": "open",
    "routes": [
     "family",
     "compose"
@@ -372,7 +372,7 @@
     "open_end",
     "line"
    ],
-   "desc": "Folded half-wave resonators. Second family on the roadmap (v0.2).",
+   "desc": "Folded half-wave resonators.",
    "related": [
     {
      "id": "edge_coupled_bpf",

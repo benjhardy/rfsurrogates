@@ -27,8 +27,10 @@ from pathlib import Path
 
 import numpy as np
 
-HERE = Path(__file__).resolve().parent
+EXP = Path(__file__).resolve().parent          # experiments/: this script, its inputs and its logs
+HERE = EXP.parent                              # the family folder: runs/, data/, figs/, samples.json
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(EXP))
 import build_case  # noqa: E402
 import collect  # noqa: E402
 import design  # noqa: E402
@@ -43,9 +45,9 @@ def log(msg):
 
 
 def tuned_centre(max_iter):
-    path = HERE / "tune_log_rl20.json"
+    path = EXP / "tune_log_rl20.json"
     if not (path.exists() and json.loads(path.read_text()).get("converged")):
-        cmd = [sys.executable, str(HERE / "tune.py"), "--design", "design_rl20.json", "--log", path.name,
+        cmd = [sys.executable, str(EXP / "tune.py"), "--design", "design_rl20.json", "--log", path.name,
                "--prefix", "tune20_", "--rl", "20", "--max-iter", str(max_iter)]
         log("tune: " + " ".join(cmd[1:]))
         subprocess.run(cmd, check=True, cwd=HERE)
@@ -68,7 +70,7 @@ def draw(centre, n, seed):
          "param_names": list(design.PARAM_NAMES), "box": box, "centre": centre, "box_frac": design.BOX_FRAC,
          "spec": "N=3 Chebyshev 0.0436 dB ripple (RL 20 dB), f0 5 GHz, 5 % ripple bandwidth",
          "validity": f"clearance > {design.C_MIN} mm", "samples": samples}
-    (HERE / "samples_rl20.json").write_text(json.dumps(S, indent=1))
+    (EXP / "samples_rl20.json").write_text(json.dumps(S, indent=1))
     return samples
 
 

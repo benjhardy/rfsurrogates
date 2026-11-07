@@ -88,7 +88,7 @@ def _scalar(z, key, default=None):
 
 
 def read_npz(path: Path) -> dict:
-    z = np.load(path, allow_pickle=True)
+    z = np.load(path, allow_pickle=False)     # records are untrusted input (CI): no pickled objects
     keys = {k.lower(): k for k in z.files}
     missing = [k for k in ("p", "f", "s11", "s21") if k not in keys]
     if missing:

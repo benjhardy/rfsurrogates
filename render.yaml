@@ -1,0 +1,13 @@
+# Render blueprint: the browser page in web/ as a static site (free plan). In Render: New > Blueprint, pick this repo.
+# The page loads the model weights from the Hugging Face model repo, so nothing is built here.
+# Custom domain: add it in the Render dashboard (Settings > Custom Domains), then the CNAME record at the registrar.
+services:
+  - type: web
+    name: rfsurrogates
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: web
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff

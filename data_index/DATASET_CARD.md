@@ -13,6 +13,21 @@ pretty_name: rfsurrogates samples
 
 # rfsurrogates samples
 
+## Mission
+
+Give RF engineers open simulation data, tested surrogate models and the know-how to build their own.
+
+## Status
+
+- All records so far come from one contributor.
+- Records are simulated. Nothing has been measured.
+- Measured validation is a plan with no date.
+- Data contributions start with a small pilot of invited people, after the v0.2 release.
+- v0.2 is not released yet.
+- How to contribute: [CONTRIBUTING.md](https://github.com/benjhardy/rfsurrogates/blob/main/CONTRIBUTING.md).
+
+## Records
+
 Full-wave simulation records of passive microwave devices, one folder per device family, 281 records in total.
 Each record is one solved design: the geometry vector p, the complex S-parameters on the family's frequency grid,
 the solver, its version, the fidelity tag, mesh statistics, compute cost, contributor and licence. The schema is
