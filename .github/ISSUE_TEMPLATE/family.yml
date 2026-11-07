@@ -14,7 +14,7 @@ body:
     attributes:
       label: "Device"
       description: "the device id in coverage.json, if it has one"
-      placeholder: "hairpin_bpf"
+      placeholder: "device_id"
     validations:
       required: true
   - type: textarea

@@ -1,6 +1,6 @@
-"""Explainer figure: how rfsurrogates splits the solver time across contributors.
+"""Explainer figure: how a contribution to rfsurrogates flows.
 
-Top left: the bottleneck (solver time for one family on one desktop vs 10 contributors).
+Top left: what the project needs from contributors, and what a solve and a query cost.
 Top right: open models and open data vs closed commercial models.
 Middle: the contribution process, steps 1 to 4.
 Bottom: the loop (more contributors, more records, better models, more device families).
@@ -27,11 +27,9 @@ STEM = "contribute_process"
 
 # ---------------------------------------------------------------- numbers (from the repo docs)
 SOLVE_MIN = 11          # one coarse Palace solve on a desktop, mean (CONTRIBUTING.md)
-N_FAMILY1 = 261         # Palace solves for family 1 (README.md)
-N_PEOPLE = 10           # illustration: 10 contributors share one family
-HOURS_ONE = round(N_FAMILY1 * SOLVE_MIN / 60)                    # about 48 h
-PER_PERSON = round(N_FAMILY1 / N_PEOPLE)                         # about 26 solves
-HOURS_EACH = round(PER_PERSON * SOLVE_MIN / 60)                  # about 5 h
+BATCH_N = 50            # coarse solves in one batch (CONTRIBUTING.md)
+BATCH_HOURS = 5         # that batch on one desktop, two jobs at a time, about (CONTRIBUTING.md)
+QUERY_MS = 4.5          # one surrogate query, batch 1 (families/edge_coupled_bpf/MODEL_CARD.md)
 
 # ---------------------------------------------------------------- style (same as the filter-fm figures)
 BLUE = "#2b6cb0"
@@ -110,41 +108,24 @@ class Canvas:
 
 # ---------------------------------------------------------------- blocks
 def header(c: Canvas, m, W):
-    c.text(m, 28, "rfsurrogates: share the solver time, share the models", size=27, color=INK, weight="bold")
-    c.text(m, 80, "A surrogate model needs a few hundred full-wave solves. Contributors share the solves. "
-                  "The models and the data are open.", size=14, color=BODY)
+    c.text(m, 28, "rfsurrogates: how a contribution flows", size=27, color=INK, weight="bold")
+    c.text(m, 80, f"A surrogate model needs a few hundred full-wave solves. One desktop does {BATCH_N} solves in "
+                  f"about {BATCH_HOURS} hours. The models and the data are open.", size=14, color=BODY)
     c.line(m, 122, m + W, 122)
 
 
-def bottleneck(c: Canvas, x, y, w):
-    c.text(x, y, "Solver time is the bottleneck", size=HEAD_SIZE, color=INK, weight="bold")
-    c.text(x, y + 32, f"One full-wave solve: about {SOLVE_MIN} min on a desktop.   One surrogate query: 4.5 ms.")
-    bx0, bx1 = x + 250, x + w - 10          # 0 h ... HOURS_ONE h
-    sx = (bx1 - bx0) / HOURS_ONE
-    # one desktop
+def needs(c: Canvas, x, y, w):
+    c.text(x, y, "What the project needs", size=HEAD_SIZE, color=INK, weight="bold")
+    c.text(x, y + 32, f"One full-wave solve: about {SOLVE_MIN} min on a desktop.   One surrogate query: {QUERY_MS} ms.")
+    rows = [("New device families", "A parameter box and a textbook model of the response."),
+            ("Other solvers", "HFSS, CST or openEMS, by export and import."),
+            ("Independent checks", "Another person tests the records and the method.")]
     yr = y + 72
-    c.text(x, yr - 2, "One desktop", color=INK, weight="bold")
-    c.text(x, yr + 20, f"{N_FAMILY1} solves x {SOLVE_MIN} min", size=12.5)
-    c.ax.add_patch(Rectangle((bx0, yr), HOURS_ONE * sx, 38, facecolor=BLUE, edgecolor="none"))
-    c.text(bx1 - 14, yr + 19, f"about {HOURS_ONE} h, about 2 days", size=14, color="white", weight="bold",
-           ha="right", va="center_baseline")
-    # ten contributors
-    yr = y + 130
-    c.text(x, yr - 2, f"{N_PEOPLE} contributors", color=INK, weight="bold")
-    c.text(x, yr + 20, f"about {PER_PERSON} solves each", size=12.5)
-    bh, bg = 4.4, 2.4
-    for i in range(N_PEOPLE):
-        c.ax.add_patch(Rectangle((bx0, yr + i * (bh + bg)), HOURS_EACH * sx, bh, facecolor=ORANGE,
-                                 edgecolor="none"))
-    c.text(bx0 + HOURS_EACH * sx + 16, yr + 5 * (bh + bg), f"about {HOURS_EACH} h each, at the same time",
-           size=14, color=ORANGE, weight="bold", va="center_baseline")
-    # time axis
-    ya = yr + N_PEOPLE * (bh + bg) + 8
-    c.line(bx0, ya, bx1, ya, color=GREY, lw=1.0)
-    for hh in range(0, HOURS_ONE + 1, 12):
-        c.line(bx0 + hh * sx, ya, bx0 + hh * sx, ya + 5, color=GREY, lw=1.0)
-        c.text(bx0 + hh * sx, ya + 8, f"{hh} h", size=11.5, color=GREY, ha="center")
-    return ya + 30
+    for k, v in rows:
+        c.text(x, yr, k, color=INK, weight="bold")
+        c.text(x + 230, yr, v)
+        yr += 44
+    return yr
 
 
 def open_panel(c: Canvas, x, y, w):
@@ -159,7 +140,7 @@ def open_panel(c: Canvas, x, y, w):
     yy += rh
     rows = [("Code, weights", "open, Apache-2.0", "closed"),
             ("Data", "open, CC-BY-4.0", "not published"),
-            ("Who adds data", "anyone", "the owner")]
+            ("Who adds data", "contributors", "the owner")]
     for i, (k, a, b) in enumerate(rows):
         if i % 2 == 0:
             c.ax.add_patch(Rectangle((x, yy), w, rh, facecolor=GREY_FILL, edgecolor="none"))
@@ -299,7 +280,7 @@ def main():
     m, W = 48, Wpx - 2 * 48
     header(c, m, W)
     y0 = 140
-    yb = bottleneck(c, m, y0, 820)
+    yb = needs(c, m, y0, 820)
     yo = open_panel(c, m + 900, y0, W - 900)
     y = max(yb, yo) + 12
     c.line(m, y, m + W, y)

@@ -6,10 +6,15 @@ Version 0.1, 2026-10-26. How the project is organised and why. Numbers come from
 
 A surrogate model of a passive microwave device maps a geometry vector p to its S-parameters over a frequency band
 in milliseconds instead of minutes, and an optimiser can invert it to find a geometry for a spec. Training one needs
-a few hundred full-wave solves per device family: a weekend of compute for one person, little for a group. This
-project pools that compute. Anyone can simulate designs of a registered family with their own solver on their own
-machine, pass each result through one checker, and submit a compact record. The repo holds the family definitions,
+a few hundred full-wave solves per device family: a weekend of compute for one person. Compute becomes relevant
+across many device families. What the project needs from outsiders is new device families, other solvers and
+independent checks. A contributor simulates designs of a registered family with their own solver on their own
+machine, passes each result through one checker, and submits a compact record. The repo holds the family definitions,
 the checker, the trainer and the data index. Hugging Face holds the weights and the records.
+
+rfsurrogates is an open project with one maintainer. Its scope today is passive, linear electromagnetic structures.
+The dataset is the lasting asset, and the models show what it can do. RF designers are the main users. ML researchers
+and AI agents are also users. Part of the purpose is to teach RF engineers ML by working on devices they understand.
 
 ## Decisions (v0.1)
 
@@ -18,7 +23,7 @@ the checker, the trainer and the data index. Hugging Face holds the weights and 
 | repos | one code repo, `github.com/benjhardy/rfsurrogates`; weights in one Hugging Face model repo per family (`rfsurrogates/<family>`); records in one dataset repo (`rfsurrogates/samples`); manifests in git |
 | licences | code and weights Apache-2.0 (explicit patent grant); records and data index CC-BY-4.0 |
 | scope | one trained model per family, shared code. A model shared across families is a research question (v0.3), reported whether it works or not |
-| contributions | data pull requests open with v0.2, after the checker runs in CI; code contributions now; DCO sign-off, no CLA |
+| contributions | data contributions start with a small pilot of invited people, after the checker runs in CI on the main branch (v0.2); practice with `--local` now; code contributions now; DCO sign-off, no CLA |
 | retraining | per release, run by a maintainer, when a family has about 25 % more records or a new fidelity group |
 | other solvers | accepted as fidelity group `other`; no published per-solver or solver-vs-solver accuracy (`docs/FIDELITY.md`) |
 | front page | the browser demo at `benjhardy.github.io/filter-surrogate/`, linked from this repo, the model card and the agent.rf hub |
@@ -61,15 +66,32 @@ few dozen samples if it has a prior, and both variants are trained and published
 
 ## Roadmap
 
+Everything after v0.1 is a plan, not a commitment. v0.2 is not released yet. No lesson exists yet.
+
 1. **v0.1** (done locally): repo, registry, checker, records and manifest, weights and model card, staging and
    fetch tools, browser page.
-2. **v0.2**: the checker in CI on data pull requests (download the submitted files, compare the hashes, rerun the
-   verdicts); data contributions open; hairpin band-pass filter as the second family (folded resonators, the same
-   coupled-line prior and metrics; a cost estimate before any solve); family imports made package-relative.
-3. **v0.3**: shared-trunk experiment across the two filter families; stage C (a second substrate, about 30 samples,
-   adapted vs from scratch).
-4. Later candidates with analytic priors: stepped-impedance low-pass filter, Wilkinson divider and branch-line
-   coupler (N-port records: the contract and the trainer grow to full S matrices).
+2. **v0.2 and the pilot**: the contributor path and the checker in CI on the main branch (download the submitted
+   files, compare the hashes, rerun the verdicts). Data contributions start with a small pilot of invited people.
+   Anyone can practise now with `--local`.
+3. **A first interactive lesson.**
+4. **A wider call for contributors.**
+5. **More device families**, once they pass held-out tests. Family imports must become package-relative first. N-port
+   records need the contract and the trainer to grow to full S matrices.
+6. **A first measured board**, with a report of the gap between measurement, solver and surrogate. This is a
+   direction, with no date.
+
+Research questions:
+
+- **v0.3, a shared model**: a shared-trunk experiment across device families, once there is more than one. It is
+  reported whether it works or not.
+- **Stage C, a second substrate**: about 30 samples, adapted vs from scratch.
+
+Directions with no date:
+
+- **Amplifiers**: the passive parts of power amplifiers and low-noise amplifiers first, then active devices under a
+  new data contract.
+- **Lessons**, in this order: MLP and the prior; fast global sensitivity analysis (FGSA); kriging and reduced-order
+  models; genetic algorithms in a reduced space; CNNs.
 
 ## The browser page
 

@@ -1,8 +1,16 @@
 # rfsurrogates
 
-Open surrogate models of passive microwave devices. A model takes a device's geometry and returns its S-parameters
-in milliseconds, where a full-wave solve takes minutes. Each model needs a few hundred solves to train, so this
-project splits that compute: contributors run a solver on their own machines and submit checked results.
+## Mission
+
+Give RF engineers open simulation data, tested surrogate models and the know-how to build their own.
+
+rfsurrogates is an open project with one maintainer. Its scope today is passive, linear electromagnetic structures.
+A surrogate model takes a device's geometry and returns its S-parameters in milliseconds, where a full-wave solve
+takes minutes. Each model needs a few hundred solves to train. The dataset is the lasting asset, and the models show
+what it can do.
+
+RF designers are the main users. ML researchers and AI agents are also users. Part of the purpose is to teach RF
+engineers ML by working on devices they understand.
 
 ![Four held-out filters: Palace solve, textbook prior, and the trained model](families/edge_coupled_bpf/figs/examples_heldout.png)
 
@@ -17,8 +25,11 @@ v0.1, 2026-10-26. One device family, data from one contributor.
 |---|---|---|
 | [Edge-coupled microstrip band-pass filter](families/edge_coupled_bpf/README.md), RO4350B, 3-7 GHz | 261 Palace solves | 0.52 dB (textbook prior alone: 2.86 dB) |
 
-The model is checked against simulation only. Nothing here was measured. The limits are in the
-[model card](families/edge_coupled_bpf/MODEL_CARD.md).
+The model is checked against simulation only. Nothing here was measured. Hardware validation is on the roadmap, with
+no date. The limits are in the [model card](families/edge_coupled_bpf/MODEL_CARD.md).
+
+v0.2 is not released yet. It means the contributor path and the checker in CI on the main branch. Data contributions
+start with a small pilot of invited people. Anyone can practise now with `--local`.
 
 ## Try it
 
@@ -40,16 +51,17 @@ python core/inverse.py --f0 5.2 --bw 0.5 --rl 10      # find a geometry for a sp
 
 ## Contribute
 
-Solver time is the bottleneck, so the main way to help is to share it.
+One desktop does 50 Palace solves in about 5 hours. What the project needs from you is new device families, other
+solvers and independent checks. Compute becomes relevant across many device families.
 [The process in one picture](docs/img/contribute_process.png). There are three ways to help, and
 [CONTRIBUTING.md](CONTRIBUTING.md) has the step-by-step guide for each.
 
 1. **Solve designs.** One command draws designs, solves them on your machine, checks each result and opens one pull
    request: `python tools/contribute.py go --n 20 --contributor <your GitHub handle>`. Palace runs by itself. For
-   HFSS, CST or openEMS, the tool exports the geometry and reads your Touchstone files back. A batch of 50 takes
-   about 5 hours on a desktop with Palace. Data pull requests open with v0.2.
-2. **Add a device family.** Propose a device with a parameter box and a textbook model of its response. The hairpin
-   band-pass filter is next. The [coverage map](docs/COVERAGE.md) lists 31 device types and their status.
+   HFSS, CST or openEMS, the tool exports the geometry and reads your Touchstone files back. Data contributions start
+   with a small pilot of invited people. Anyone can practise now by adding `--local`.
+2. **Add a device family.** Propose a device with a parameter box and a textbook model of its response. The
+   [coverage map](docs/COVERAGE.md) lists 31 device types and their status.
 3. **Improve the code.** Issues and pull requests are welcome now. Open an issue first for anything beyond a small
    fix, and run `python -m pytest tests -q` before you submit.
 
